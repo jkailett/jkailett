@@ -12,7 +12,7 @@ const topics = [
   { day: '05', title: 'Kelola Keuangan dengan Bijak', icon: '💰' },
   { day: '06', title: 'Jelajah Kepemimpinan Diri', icon: '👑' },
   { day: '07', title: 'Rencana Aksi Nyata', icon: '📋' },
-}
+]
 
 const faqs = [
   {
@@ -145,7 +145,7 @@ export default function Tantangan7Hari() {
             <form className="space-y-4 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="name" className="sr-only">Nama Panggilan Bunda</div>
+                  <label htmlFor="name" className="sr-only">Nama Panggilan Bunda</label>
                   <input
                     type="text"
                     id="name"
@@ -157,7 +157,7 @@ export default function Tantangan7Hari() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="phone" className="sr-only">Nomor WhatsApp</div>
+                  <label htmlFor="phone" className="sr-only">Nomor WhatsApp</label>
                   <input
                     type="tel"
                     id="phone"

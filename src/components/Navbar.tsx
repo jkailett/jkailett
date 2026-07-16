@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { Menu, X, MessageCircle } from 'lucide-react'
@@ -131,4 +131,3 @@ export default function Navbar() {
     </motion.header>
   )
 }
-EOF

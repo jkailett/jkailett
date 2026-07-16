@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { MessageCircle, ArrowRight, Instagram, Youtube, Tiktok } from 'lucide-react'
+import { MessageCircle, ArrowRight, Instagram, Youtube } from 'lucide-react'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -60,7 +60,9 @@ export default function Footer() {
                 className="w-10 h-10 rounded-full bg-warm-border flex items-center justify-center text-sage-green hover:bg-sage-green hover:text-white transition-all duration-300"
                 aria-label="TikTok GrowWithIka"
               >
-                <Tiktok className="w-5 h-5" aria-hidden="true" />
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                </svg>
               </a>
             </div>
           </motion.div>
@@ -167,4 +169,3 @@ export default function Footer() {
     </footer>
   )
 }
-EOF

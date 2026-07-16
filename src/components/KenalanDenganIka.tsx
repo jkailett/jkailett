@@ -134,4 +134,3 @@ function TrustBadge({ icon: Icon, text }: { icon: React.ComponentType<{ classNam
     </div>
   )
 }
-EOF

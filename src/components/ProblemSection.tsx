@@ -154,4 +154,3 @@ export default function ProblemSection() {
     </section>
   )
 }
-EOF
