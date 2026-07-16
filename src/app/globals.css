@@ -1,0 +1,201 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+@layer base {
+  :root {
+    --font-playfair: 'Playfair Display', serif;
+    --font-dm-sans: 'DM Sans', sans-serif;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-warm-sand text-soft-black font-body antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  * {
+    @apply border-warm-border;
+  }
+
+  ::selection {
+    @apply bg-terracotta/30 text-soft-black;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-warm-sand;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-sage-green/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-sage-green/50;
+  }
+}
+
+@layer components {
+  .container-custom {
+    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-16 sm:py-20 lg:py-24 xl:py-28;
+  }
+
+  .heading-1 {
+    @apply font-heading text-sage-green-dark text-4xl sm:text-5xl lg:text-6xl font-medium leading-tight tracking-tight;
+  }
+
+  .heading-2 {
+    @apply font-heading text-sage-green-dark text-3xl sm:text-4xl lg:text-5xl font-medium leading-tight;
+  }
+
+  .heading-3 {
+    @apply font-heading text-sage-green-dark text-2xl sm:text-3xl font-medium leading-snug;
+  }
+
+  .body-lg {
+    @apply text-lg sm:text-xl text-soft-black/90 leading-relaxed;
+  }
+
+  .body-base {
+    @apply text-base sm:text-lg text-soft-black/90 leading-relaxed;
+  }
+
+  .body-small {
+    @apply text-sm sm:text-base text-text-secondary leading-relaxed;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-terracotta text-white font-medium text-base sm:text-lg
+           hover:bg-terracotta-dark transition-all duration-300 hover:shadow-terracotta-lg hover:-translate-y-0.5
+           focus:outline-none focus:ring-2 focus:ring-terracotta/50 focus:ring-offset-2 focus:ring-offset-warm-sand
+           active:scale-[0.98] active:bg-terracotta-dark/90;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border-2 border-sage-green text-sage-green font-medium text-base sm:text-lg
+           hover:bg-sage-green hover:text-white transition-all duration-300 hover:shadow-warm-lg
+           focus:outline-none focus:ring-2 focus:ring-sage-green/50 focus:ring-offset-2 focus:ring-offset-warm-sand
+           active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 text-sage-green font-medium text-base sm:text-lg underline-offset-4
+           hover:underline transition-colors duration-200;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-warm p-6 sm:p-8 transition-all duration-300 hover:shadow-warm-lg;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-4 rounded-xl bg-white border-2 border-warm-border text-soft-black placeholder:text-text-muted
+           focus:outline-none focus:border-sage-green focus:ring-2 focus:ring-sage-green/20
+           transition-all duration-200 placeholder:text-text-muted;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .badge-terracotta {
+    @apply bg-terracotta/10 text-terracotta-dark border border-terracotta/20;
+  }
+
+  .badge-sage {
+    @apply border border-sage-green text-sage-green-dark bg-transparent;
+  }
+
+  .badge-clay {
+    @apply bg-muted-clay/10 text-muted-clay border border-muted-clay/20;
+  }
+
+  .section-label {
+    @apply text-xs sm:text-sm font-medium text-terracotta-dark uppercase tracking-widest mb-4;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .animate-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animate-delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .animate-delay-400 {
+    animation-delay: 400ms;
+  }
+
+  .animate-delay-500 {
+    animation-delay: 500ms;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.6s ease-out forwards;
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
