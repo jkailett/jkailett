@@ -91,7 +91,7 @@ async function notionCreate(phone: string, name: string) {
       body: JSON.stringify({
         parent: { database_id: NOTION_DB_ID },
         properties: {
-          'Lead Name': { title: [{ text: { content: `${phone} — ${name}` } }] },
+          'Lead Name': { title: [{ text: { content: `${phone}` } }] },
           'Day 1': { checkbox: false }, 'Completed': { checkbox: false }, 'Completion Rate': { number: 0 },
         }
       })
