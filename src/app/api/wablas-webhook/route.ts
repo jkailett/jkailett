@@ -134,28 +134,10 @@ export async function POST(req: Request) {
     if (silentWords.some(k => mLower === k || mLower.startsWith(k)))
       return new Response(null, { status: 204 })
 
-    // Delay 20-35 detik biar natural kayak manusia ngetik
-    await delay(20000 + Math.random() * 15000)
+    // Delay 12-25 detik biar natural
+    await delay(12000 + Math.random() * 13000)
 
-    // STOP
-    if (['stop','berhenti','cancel','batal','keluar'].some(k => mLower.includes(k)))
-      return new Response('Kamu berhenti menerima broadcast. Ketik MULAI kapan saja untuk bergabung kembali.')
-
-    // HELP
-    if (['tanya','help','bantu','info','faq','apa itu','bagaimana'].some(k => mLower.includes(k)))
-      return new Response(faqMsg())
-
-    // YES
-    if (['ya','iya','siap','oke','lanjut','mau dong'].some(k => mLower === k || mLower.startsWith(k))) {
-      await notionCreate(phone, data?.pushName || '')
-      return new Response('Siapa nama lengkap Bunda? 🌸')
-    }
-
-    // GREETINGS
-    if (['hai','halo','hello','hi','hey','selamat','pagi','siang','sore','malam','assalamualaikum','asslm','mulai','join','gabung','daftar','coba','tes','test'].some(k => mLower.includes(k)))
-      return new Response(welcome())
-
-    // ANYTHING ELSE — cek Notion dulu (sequential flow), lalu AI fallback
+    // Cek dulu apakah user sedang di sequential flow (Notion punya data incomplete)
     const page = await notionQuery(phone)
     
     if (page) {
@@ -164,7 +146,7 @@ export async function POST(req: Request) {
       const day1Done = props['Day 1']?.checkbox === true
       
       if (day1Done) {
-        // Already completed Day 1 — AI bisa jawab natural
+        // Day 1 selesai → AI 
         const ai = await aiRespond(msg, "User sudah selesai Day 1, menunggu Day 2.")
         if (ai) return new Response(ai)
         return new Response(`Halo lagi! Day 1 sudah dikirim. Besok jam 7 pagi lanjut Day 2 ya 🌸`)
@@ -172,25 +154,22 @@ export async function POST(req: Request) {
 
       const parts = leadName.split('||')
       
-      // Sequential flow: collect name → city → goal → source
+      // Sequential flow: name → city → goal → source
       if (parts.length === 1 && !leadName.includes('—')) {
         const newName = `${phone} — ${msg}`
         await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: newName } }] } } })
         return new Response('Dari kota mana, Bunda? 🏙️')
       }
-      
       if (parts.length === 1) {
         const updated = `${leadName} || city: ${msg}`
         await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: updated } }] } } })
         return new Response('Apa tujuan Bunda ikut challenge ini? 🎯')
       }
-      
       if (parts.length === 2) {
         const updated = `${leadName} || goal: ${msg}`
         await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: updated } }] } } })
         return new Response('Darimana Bunda tahu GrowWithIka? 📱')
       }
-      
       if (parts.length === 3) {
         const updated = `${leadName} || source: ${msg}`
         await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: updated } }] }, 'Day 1': { checkbox: true }, 'Completion Rate': { number: 14.29 } } })
@@ -198,11 +177,29 @@ export async function POST(req: Request) {
       }
     }
 
-    // AI fallback untuk pertanyaan umum
-    const aiText = await aiRespond(msg, page ? "User sudah terdaftar." : "User baru, belum kenal.")
-    if (aiText) return new Response(aiText)
-    
-    return new Response(`Halo Bunda! 👋 Selamat datang! Ketik YA untuk mulai 7-Hari Challenge gratis, atau TANYA untuk FAQ.`)
+    // AI FIRST — untuk user baru/belum dikenal, AI lebih pintar deteksi intent
+    const state = page ? "User sudah terdaftar tapi sedang dalam proses." : "User baru, belum kenal GrowWithIka."
+    const aiMsg = await aiRespond(msg, state)
+    if (aiMsg) return new Response(aiMsg)
+
+    // FALLBACK — keyword matching
+    // STOP
+    if (['stop','berhenti','cancel','batal','keluar'].some(k => mLower.includes(k)))
+      return new Response('Kamu berhenti menerima broadcast. Ketik MULAI kapan saja untuk bergabung kembali.')
+    // YES
+    if (['ya','iya','siap','oke','lanjut','mau dong'].some(k => mLower === k || mLower.startsWith(k))) {
+      await notionCreate(phone, data?.pushName || '')
+      return new Response('Siapa nama lengkap Bunda? 🌸')
+    }
+    // HELP
+    if (['tanya','help','bantu','info','faq','apa itu','bagaimana'].some(k => mLower.includes(k)))
+      return new Response(faqMsg())
+    // GREETINGS
+    if (['hai','halo','hello','hi','hey','selamat','pagi','siang','sore','malam','assalamualaikum','asslm','mulai','join','gabung','daftar','coba','tes','test'].some(k => mLower.includes(k)))
+      return new Response(welcome())
+
+    // Final fallback
+    return new Response(`Halo Bunda! Selamat datang di GrowWithIka. Ketik YA untuk mulai 7-Hari Challenge gratis, atau TANYA untuk info lebih lanjut.`)
   } catch (e: any) {
     console.error('[WEBHOOK]', e.message)
     return new Response(null, { status: 204 })
