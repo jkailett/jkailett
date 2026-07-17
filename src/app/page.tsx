@@ -5,6 +5,7 @@ import ProblemSection from '@/components/ProblemSection'
 import LevelSystem from '@/components/LevelSystem'
 import ChallengeSection from '@/components/ChallengeSection'
 import Testimonials from '@/components/Testimonials'
+import FAQSection from '@/components/FAQSection'
 import Footer from '@/components/Footer'
 import StickyCTA from '@/components/StickyCTA'
 import Script from 'next/script'
@@ -29,6 +30,7 @@ export default function Home() {
         <LevelSystem />
         <ChallengeSection />
         <Testimonials />
+        <FAQSection />
         <Footer />
         <StickyCTA />
       </main>
