@@ -178,9 +178,26 @@ export async function POST(req: Request) {
     }
 
     // AI FIRST — untuk user baru/belum dikenal, AI lebih pintar deteksi intent
-    const state = page ? "User sudah terdaftar tapi sedang dalam proses." : "User baru, belum kenal GrowWithIka."
-    const aiMsg = await aiRespond(msg, state)
-    if (aiMsg) return new Response(aiMsg)
+    let chatHistory = ''
+    if (page) {
+      const notes = page.properties?.['Notes']?.rich_text?.[0]?.text?.content || ''
+      if (notes) chatHistory = `\n\nRiwayat chat:\n${notes}`
+    }
+    const state = page ? "User sudah terdaftar." : "User baru, belum kenal GrowWithIka."
+    const aiMsg = await aiRespond(msg, state + chatHistory)
+    if (aiMsg) {
+      // Simpan Q&A ke Notion memory
+      if (page) {
+        const notes = page.properties?.['Notes']?.rich_text?.[0]?.text?.content || ''
+        const updated = (notes ? notes + '\n' : '') + `[Q: ${msg}] [A: ${aiMsg}]`
+        const maxLen = 1900
+        const trimmed = updated.length > maxLen ? updated.slice(-maxLen) : updated
+        notionUpdate(page.id, {
+          properties: { 'Notes': { rich_text: [{ text: { content: trimmed } }] } }
+        }).catch(() => {})
+      }
+      return new Response(aiMsg)
+    }
 
     // FALLBACK — keyword matching
     // STOP

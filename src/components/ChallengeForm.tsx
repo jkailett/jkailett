@@ -22,8 +22,9 @@ export default function ChallengeForm() {
     let phone = data.phone.replace(/\D/g, '')
     if (phone.startsWith('0')) phone = '62' + phone.slice(1)
     if (!phone.startsWith('62')) phone = '62' + phone
-    const message = 'Halo Ika, saya ' + data.name + ' ingin gabung 7 Hari Growth Challenge gratis via WA'
-    window.open('https://wa.me/' + phone + '?text=' + encodeURIComponent(message), '_blank')
+    const targetPhone = '6285312200796'
+    const message = 'Halo Ren Coach, saya ' + data.name + ' ingin gabung 7-Hari Growth Challenge gratis'
+    window.open('https://wa.me/' + targetPhone + '?text=' + encodeURIComponent(message), '_blank')
     setStatus('success')
     reset()
   }

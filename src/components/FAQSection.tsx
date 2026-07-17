@@ -240,7 +240,7 @@ export default function FAQSection() {
             Masih punya pertanyaan? Langsung chat ke WA kami — tim kami jawab langsung, no bot, no pressure.
           </motion.p>
           <a
-            href="https://wa.me/6285312200796?text=Halo%20Ika%2C%20saya%20mau%20tanya%20soal%20program%20GrowWithIka"
+            href="https://wa.me/6285312200796?text=Halo%20Ren%20Coach%2C%20saya%20mau%20tanya%20soal%20program%20GrowWithIka"
             className="btn-primary inline-flex items-center gap-2"
             aria-label="Chat langsung ke WhatsApp Ika"
           >

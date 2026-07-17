@@ -83,7 +83,7 @@ export default function KenalanDenganIka() {
             </motion.p>
 
             <motion.a
-              href="https://wa.me/6285312000796?text=Halo%20Ika%2C%20saya%20ingin%20kenalan%20dan%20konsultasi%20gratis"
+              href="https://wa.me/6285312200796?text=Halo%20Ren%20Coach%2C%20saya%20mau%20konsultasi%20gratis%20tentang%20GrowWithIka"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-primary inline-flex group"
