@@ -113,18 +113,18 @@ export async function POST(req: Request) {
       // Step 1: Has name, need city
       const updated = `${leadName} || city: ${msg}`
       await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: updated } }] } } })
-      return new Response('Apa tujuan Bunda ikut challenge ini? 🎯')
+      return new Response('Dari kota mana, Bunda? 🏙️')
     }
     
     if (parts.length === 2) {
       // Step 2: Has name+city, need goal
       const updated = `${leadName} || goal: ${msg}`
       await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: updated } }] } } })
-      return new Response('Darimana Bunda tahu GrowWithIka? 📱')
+      return new Response('Apa tujuan Bunda ikut challenge ini? 🎯')
     }
     
     if (parts.length === 3) {
-      // Step 3: Has goal, need source — complete
+      // Step 3: Has name+city+goal, need source
       const updated = `${leadName} || source: ${msg}`
       await notionUpdate(page.id, {
         properties: { 'Lead Name': { title: [{ text: { content: updated } }] }, 'Day 1': { checkbox: true }, 'Completion Rate': { number: 14.29 } }
