@@ -73,7 +73,7 @@ export async function POST(req: Request) {
 
     // SILENT — tidak balas, bikin natural kayak manusia silent aja
     if (['ok','oke','okay','oh','ohh','owh','owh gitu','ya udah','oke sip','sip','noted','baik','baik2','baik2 aja','bae','bae2'].some(k => mLower === k || mLower.startsWith(k)))
-      return new Response('', { status: 200 })
+      return new Response(null, { status: 204 })
 
     // STOP
     if (['stop','berhenti','cancel','batal','keluar'].some(k => mLower.includes(k)))
