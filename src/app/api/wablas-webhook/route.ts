@@ -74,6 +74,12 @@ export async function POST(req: NextRequest) {
 
     const message = rawMsg.toLowerCase().trim()
 
+    // === STOP keywords — priority check (even during flow) ===
+    if (keywordMatch(message, STOP_KEYWORDS)) {
+      userStates.delete(phone)
+      return NextResponse.json({ status: true, message: 'Unsubscribed' })
+    }
+
     // Check if user is in state flow (answering questions)
     const state = userStates.get(phone)
     
@@ -97,12 +103,6 @@ export async function POST(req: NextRequest) {
       // Send next question
       await sendWablas(phone, QUESTIONS[state.step - 1].question)
       return NextResponse.json({ status: true, message: `Question ${state.step} sent` })
-    }
-
-    // === STOP keywords ===
-    if (keywordMatch(message, STOP_KEYWORDS)) {
-      userStates.delete(phone)
-      return NextResponse.json({ status: true, message: 'Unsubscribed' })
     }
 
     // === YES keywords — start data collection ===
