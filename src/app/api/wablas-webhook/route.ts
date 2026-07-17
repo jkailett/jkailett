@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 const WABLAS_TOKEN = process.env.WABLAS_TOKEN || ''
 const WABLAS_SECRET = process.env.WABLAS_SECRET || 'HcU2B9tK'
 const WABLAS_API = 'https://tegal.wablas.com/api'
-const NOTION_DB_ID = '39d95b591c4981acb7d7cff618972925'
+const NOTION_DB_ID = '39d95b59-1c49-81ac-b7d7-cff618972925'
 
 const WELCOME = `Halo Bunda! 👋 Selamat datang di 7-Hari Growth Challenge GRATIS!\n\nSiap mulai? Ketik: YA (daftar) atau TANYA (FAQ) 💪`
 
