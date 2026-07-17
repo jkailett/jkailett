@@ -1,28 +1,21 @@
-// Wablas Webhook — menerima incoming message, membalas via response body
+// Wablas Webhook — response body = balasan ke user. Silent = 204 No Content
 const WABLAS_TOKEN = 'Vn2UG8k2UJI1AuC8ptPC3YTqCb1HKCzCJGdWfkiBdYE2Yovczhbscn6'
 const WABLAS_SECRET = 'HcU2B9tK'
 const NOTION_DB_ID = '39d95b59-1c49-81ac-b7d7-cff618972925'
 const NOTION_VER = '2022-06-28'
 
-function welcome() {
-  return "Halo Bunda! 👋 Selamat datang di 7-Hari Growth Challenge GRATIS!\n\nIkuti challenge ini untuk:\n✨ Mindset leadership yang kuat\n✨ Komunitas support & accountability\n✨ Earning potential yang nyata\n\nSiap mulai? 💪\n\nKetik: YA (untuk daftar)\nKetik: TANYA (untuk FAQ)"
-}
+function welcome() { return "Halo Bunda! 👋 Selamat datang di 7-Hari Growth Challenge GRATIS!\n\nIkuti challenge ini untuk:\n✨ Mindset leadership yg kuat\n✨ Komunitas support & accountability\n✨ Earning potential nyata\n\nSiap mulai? 💪\n\nKetik: YA (daftar)\nKetik: TANYA (FAQ)" }
 
-function faq() {
-  return "FAQ — 7-Hari Growth Challenge\n\n❓ Apa itu? Program 7 hari gratis fokus leadership.\n💰 Gratis 100%.\n👥 Join komunitas khusus member.\n\nKetik YA untuk daftar!"
-}
+function faqMsg() { return "FAQ — 7-Hari Growth Challenge\n\n❓ Apa itu? Program 7 hari gratis fokus leadership.\n💰 Gratis 100%.\n👥 Join komunitas khusus member.\n\nKetik YA untuk daftar!" }
 
 async function notionQuery(phone: string) {
   const nt = process.env.NOTION_TOKEN || ''
   if (!nt) return null
-  
   try {
     const resp = await fetch(`https://api.notion.com/v1/databases/${NOTION_DB_ID}/query`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${nt}`, 'Notion-Version': NOTION_VER, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        filter: { property: 'Lead Name', title: { contains: phone } }
-      })
+      body: JSON.stringify({ filter: { property: 'Lead Name', title: { contains: phone } } })
     })
     const json = await resp.json()
     return json.results?.[0] || null
@@ -67,12 +60,13 @@ export async function POST(req: Request) {
     
     const msg = (data?.message || '').trim()
     const phone = data?.phone || ''
-    if (!phone || !msg) return new Response('ok')
-    
+    if (!phone || !msg) return new Response(null, { status: 204 })
+
     const mLower = msg.toLowerCase().trim()
 
-    // SILENT — tidak balas, bikin natural kayak manusia silent aja
-    if (['ok','oke','okay','oh','ohh','owh','owh gitu','ya udah','oke sip','sip','noted','baik','baik2','baik2 aja','bae','bae2'].some(k => mLower === k || mLower.startsWith(k)))
+    // SILENT — 204 No Content, Wablas gak kirim apa2
+    const silent = ['ok','oke','okay','oh','ohh','owh','ya udah','sip','noted','baik','baik2','bae','hmm','hm','he eh','yoi']
+    if (silent.some(k => mLower === k || mLower.startsWith(k)))
       return new Response(null, { status: 204 })
 
     // STOP
@@ -81,20 +75,19 @@ export async function POST(req: Request) {
 
     // HELP
     if (['tanya','help','bantu','info','faq','apa itu','bagaimana'].some(k => mLower.includes(k)))
-      return new Response(faq())
+      return new Response(faqMsg())
 
-    // YES — create Notion entry, ask name
-    if (['ya','iya','y','yes','siap','oke','lanjut','mau dong'].some(k => mLower === k || mLower.startsWith(k))) {
+    // YES
+    if (['ya','iya','siap','oke','lanjut','mau dong'].some(k => mLower === k || mLower.startsWith(k))) {
       await notionCreate(phone, data?.pushName || '')
       return new Response('Siapa nama lengkap Bunda? 🌸')
     }
 
     // GREETINGS
-    if (['hai','halo','hello','hi','hey','selamat','pagi','siang','sore','malam',
-        'assalamualaikum','asslm','mulai','join','gabung','daftar','coba','tes','test'].some(k => mLower.includes(k)))
+    if (['hai','halo','hello','hi','hey','selamat','pagi','siang','sore','malam','assalamualaikum','asslm','mulai','join','gabung','daftar','coba','tes','test'].some(k => mLower.includes(k)))
       return new Response(welcome())
 
-    // ANYTHING ELSE — check Notion for progress
+    // ANYTHING ELSE — cek Notion
     const page = await notionQuery(phone)
     if (!page) return new Response(welcome())
 
@@ -102,44 +95,40 @@ export async function POST(req: Request) {
     const leadName = props['Lead Name']?.title?.[0]?.text?.content || ''
     const day1Done = props['Day 1']?.checkbox === true
     
-    if (day1Done) return new Response(`Halo lagi! Day 1 sudah dikirim. Besok jam 7 pagi kita lanjut Day 2 ya 🌸`)
+    if (day1Done) return new Response(`Halo lagi! Day 1 sudah dikirim. Besok jam 7 pagi lanjut Day 2 ya 🌸`)
 
     const parts = leadName.split('||')
     
     if (parts.length === 1 && !leadName.includes('—')) {
-      // Step 0: No name
       const newName = `${phone} — ${msg}`
       await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: newName } }] } } })
       return new Response('Dari kota mana, Bunda? 🏙️')
     }
     
     if (parts.length === 1) {
-      // Step 1: Has name, need city
       const updated = `${leadName} || city: ${msg}`
-      await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: updated } }] } } })
-      return new Response('Dari kota mana, Bunda? 🏙️')
-    }
-    
-    if (parts.length === 2) {
-      // Step 2: Has name+city, need goal
-      const updated = `${leadName} || goal: ${msg}`
       await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: updated } }] } } })
       return new Response('Apa tujuan Bunda ikut challenge ini? 🎯')
     }
     
+    if (parts.length === 2) {
+      const updated = `${leadName} || goal: ${msg}`
+      await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: updated } }] } } })
+      return new Response('Darimana Bunda tahu GrowWithIka? 📱')
+    }
+    
     if (parts.length === 3) {
-      // Step 3: Has name+city+goal, need source
       const updated = `${leadName} || source: ${msg}`
       await notionUpdate(page.id, {
         properties: { 'Lead Name': { title: [{ text: { content: updated } }] }, 'Day 1': { checkbox: true }, 'Completion Rate': { number: 14.29 } }
       })
-      return new Response(`🎉 Terima kasih! Data sudah lengkap.\n\n📚 Day 1: Bangun Mentalitas Bertumbuh\n✅ Tulis 3 hal yang disyukuri\n✅ Set 1 goal kecil\n✅ Baca refleksi mindset\n\nBesok jam 7 pagi kita lanjut Day 2! 🚀`)
+      return new Response(`🎉 Terima kasih! Data sudah lengkap.\n\n📚 Day 1: Bangun Mentalitas Bertumbuh\n✅ Tulis 3 hal yg disyukuri\n✅ Set 1 goal kecil\n✅ Baca refleksi mindset\n\nBesok jam 7 pagi lanjut Day 2! 🚀`)
     }
 
     return new Response(welcome())
   } catch (e: any) {
     console.error('[WEBHOOK]', e.message)
-    return new Response('Maaf ada kesalahan. Silakan coba lagi')
+    return new Response(null, { status: 204 })
   }
 }
 
