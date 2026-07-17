@@ -132,6 +132,16 @@ export default function ProblemSection() {
             Di GrowWithIka, kamu akan belajar membangun kepemimpinan, kesehatan, dan bisnis secara bertahap dalam komunitas yang saling mendukung.
           </motion.p>
 
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="body-base text-terracotta/90 font-medium mb-8"
+          >
+            ✅ 7 Hari Gratis via WhatsApp → ✅ PDF Toolkit Gratis → ✅ Komunitas 1.240+ Ibu
+          </motion.p>
+
           <motion.a
             href="#tantangan"
             className="btn-primary inline-flex group"
@@ -139,7 +149,7 @@ export default function ProblemSection() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <span>Mulai dengan 7 Hari Growth Challenge gratis melalui WhatsApp</span>
+            <span>Mulai 7 Hari Growth Challenge Gratis</span>
             <motion.span
               initial={{ x: -4 }}
               whileHover={{ x: 4 }}

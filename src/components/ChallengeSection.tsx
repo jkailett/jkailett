@@ -43,20 +43,58 @@ export default function ChallengeSection() {
           </motion.h2>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="body-lg text-soft-black/70"
-          >
-            Kirim satu pesan WhatsApp — dapatkan pelajaran harian selama 7 hari. Tanpa kartu kredit, tanpa jualan, tanpa spam. Hanya langkah kecil setiap hari.
-          </motion.p>
-        </motion.div>
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                      className="body-lg text-soft-black/70"
+                    >
+                      Kirim satu pesan WhatsApp — dapatkan pelajaran harian selama 7 hari. Tanpa kartu kredit, tanpa jualan, tanpa spam. Hanya langkah kecil setiap hari.
+                    </motion.p>
+                  </motion.div>
 
-        {/* 7 Topics */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+                  {/* Value Promise Before Form */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-100px' }}
+                    transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
+                    className="max-w-2xl mx-auto mb-10 p-6 sm:p-8 bg-white/50 rounded-2xl border border-warm-border"
+                  >
+                    <motion.p
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: 0.1 }}
+                      className="body-base text-center text-terracotta/90 font-medium mb-6"
+                    >
+                      Apa yang Bunda Dapatkan Saat Bergabung Hari Ini:
+                    </motion.p>
+                    <motion.ul
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                      className="grid grid-cols-3 gap-4 sm:gap-6 text-center text-sm"
+                      role="list"
+                    >
+                      <li role="listitem" className="flex flex-col items-center gap-1 p-3 rounded-xl bg-white/50">
+                        <span className="text-2xl font-bold text-terracotta">7</span>
+                        <span className="text-soft-black/80">Pesan WA Harian</span>
+                      </li>
+                      <li role="listitem" className="flex flex-col items-center gap-1 p-3 rounded-xl bg-white/50">
+                        <span className="text-2xl font-bold text-sage-green">1</span>
+                        <span className="text-soft-black/80">PDF Toolkit Gratis</span>
+                      </li>
+                      <li role="listitem" className="flex flex-col items-center gap-1 p-3 rounded-xl bg-white/50">
+                        <span className="text-2xl font-bold text-terracotta">1.240+</span>
+                        <span className="text-soft-black/80">Ibu di Komunitas</span>
+                      </li>
+                    </motion.ul>
+                  </motion.div>
+
+                  {/* Form Section */}
+                  <motion.div
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-16"

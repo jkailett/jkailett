@@ -38,7 +38,7 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
             className="heading-1 text-balance mb-6"
           >
-            Bangun Masa Depan yang Lebih Baik.
+            Dari Ibu Rumah Tangga jadi Leader Mandiri — Tanpa Tekanan Jualan
           </motion.h1>
 
           {/* Subheadline */}
@@ -48,7 +48,7 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
             className="body-lg text-soft-black/90 max-w-3xl mx-auto mb-10 text-balance"
           >
-            Saya membantu ibu dan keluarga bertumbuh dalam kepemimpinan, hidup lebih sehat, dan membangun kesejahteraan melalui komunitas, Maxwell Leadership, dan bisnis Atomy yang berorientasi jangka panjang.
+            Sistem 3 Level: Growth → Leadership → Business. Mulai dari 7 Hari Gratis via WhatsApp, zero pressure. Atomy opsional di Level 3.
           </motion.p>
 
           {/* CTA Buttons */}
