@@ -16,7 +16,7 @@ export default function StickyCTA() {
         </a>
 
         <a
-          href="https://wa.me/6285312200796?text=Halo%20Ren%20Coach%2C%20saya%20tertarik%20dengan%207-Hari%20Growth%20Challenge"
+          href="https://wa.me/6285312000796?text=Halo%20Ren%20Coach%2C%20saya%20tertarik%20dengan%207-Hari%20Growth%20Challenge"
           target="_blank"
           rel="noopener noreferrer"
           className="btn-secondary py-3"
