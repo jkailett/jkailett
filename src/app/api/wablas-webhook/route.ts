@@ -1,84 +1,154 @@
 // Wablas Webhook — menerima incoming message, membalas via response body
-// Wablas mengirim POST ke endpoint ini, response body-nya menjadi auto-reply
+// Wablas menggunakan response body sebagai auto-reply
 
 const WABLAS_TOKEN = 'Vn2UG8k2UJI1AuC8ptPC3YTqCb1HKCzCJGdWfkiBdYE2Yovczhbscn6'
 const WABLAS_SECRET = 'HcU2B9tK'
 const NOTION_DB_ID = '39d95b59-1c49-81ac-b7d7-cff618972925'
 
-function getWelcome() {
+function welcome() {
   return "Halo Bunda! 👋 Selamat datang di 7-Hari Growth Challenge GRATIS dari Komunitas Tumbuh Bersama!\n\nIkuti challenge ini untuk:\n✨ Mindset leadership yang kuat\n✨ Komunitas support & accountability\n✨ Earning potential yang nyata\n\nSiap mulai transformasi? 💪\n\nKetik: YA (untuk daftar)\nKetik: TANYA (untuk FAQ)"
 }
 
-function getFAQ() {
+function faq() {
   return "FAQ — 7-Hari Growth Challenge\n\n❓ Apa itu? Program 7 hari gratis fokus leadership.\n💰 Gratis 100%.\n👥 Join komunitas khusus member.\n\nKetik YA untuk daftar!"
-}
-
-function getQuestions() {
-  return "Siapa nama lengkap Bunda? 🌸"
 }
 
 export async function POST(req: Request) {
   try {
-    // Parse incoming data from Wablas
     const rawText = await req.text()
     let data: any = {}
     try { data = JSON.parse(rawText) } catch { data = {} }
 
-    const message = (data?.message || '').trim()
+    const msg = (data?.message || '').trim()
     const phone = data?.phone || ''
-    const pushName = data?.pushName || data?.name || ''
+    const pushName = data?.pushName || ''
     
-    if (!phone || !message) {
-      return new Response('no message', { status: 200 })
-    }
+    if (!phone || !msg) return new Response('ok')
 
-    const msg = message.toLowerCase().trim()
+    const mLower = msg.toLowerCase().trim()
 
     // === STOP ===
-    if (['stop','berhenti','cancel','batal','keluar'].some(k => msg.includes(k))) {
+    if (['stop','berhenti','cancel','batal','keluar'].some(k => mLower.includes(k)))
       return new Response('Kamu berhenti menerima broadcast. Ketik MULAI kapan saja untuk bergabung kembali.')
-    }
 
     // === HELP ===
-    if (['tanya','help','bantu','info','faq','apa itu'].some(k => msg.includes(k))) {
-      return new Response(getFAQ())
-    }
+    if (['tanya','help','bantu','info','faq','apa itu','bagaimana'].some(k => mLower.includes(k)))
+      return new Response(faq())
 
-    // === YES ===
-    if (['ya','iya','y','yes','siap','oke','ok','okay','lanjut','mau'].some(k => msg === k || msg.startsWith(k))) {
-      // Create Notion entry
-      const key = process.env.NOTION_TOKEN || ''
-      if (key) {
-        const body = JSON.stringify({
-          parent: { database_id: NOTION_DB_ID },
-          properties: {
-            'Lead Name': { title: [{ text: { content: `${phone} — ${pushName || ''}` } }] },
-            'Day 1': { checkbox: false },
-            'Completed': { checkbox: false },
-            'Completion Rate': { number: 0 },
-          }
-        })
-        fetch('https://api.notion.com/v1/pages', {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${key}`, 'Notion-Version': '2025-09-03', 'Content-Type': 'application/json' },
-          body
-        }).catch(() => {})
-      }
-      return new Response(getQuestions())
+    // === YES — create Notion entry, ask name ===
+    if (['ya','iya','y','yes','siap','oke','ok','okay','lanjut','mau'].some(k => mLower === k || mLower.startsWith(k))) {
+      try {
+        const nt = process.env.NOTION_TOKEN || ''
+        if (nt) {
+          fetch('https://api.notion.com/v1/pages', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${nt}`, 'Notion-Version': '2025-09-03', 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              parent: { database_id: NOTION_DB_ID },
+              properties: {
+                'Lead Name': { title: [{ text: { content: `${phone} — ${pushName || ''}` } }] },
+                'Day 1': { checkbox: false },
+                'Completed': { checkbox: false },
+                'Completion Rate': { number: 0 },
+              }
+            })
+          }).catch(() => {})
+        }
+      } catch(e) {}
+      return new Response('Siapa nama lengkap Bunda? 🌸')
     }
 
     // === GREETINGS ===
     if (['hai','halo','hello','hi','hey','selamat','pagi','siang','sore','malam',
-        'assalamualaikum','mulai','join','gabung','daftar','mau','tes','test','coba'].some(k => msg.includes(k))) {
-      return new Response(getWelcome())
-    }
+        'assalamualaikum','asslm','mulai','join','gabung','daftar','coba','tes','test'].some(k => mLower.includes(k)))
+      return new Response(welcome())
 
-    // === ANYTHING ELSE — check Notion for existing progress ===
-    return new Response(getWelcome())
+    // === ANYTHING ELSE — check Notion for user progress ===
+    try {
+      const nt = process.env.NOTION_TOKEN || ''
+      if (nt) {
+        const resp = await fetch(`https://api.notion.com/v1/databases/${NOTION_DB_ID}/query`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${nt}`, 'Notion-Version': '2025-09-03', 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            filter: {
+              property: 'Lead Name',
+              title: { contains: phone }
+            }
+          })
+        })
+        const json = await resp.json()
+        const page = json.results?.[0]
+        
+        if (page) {
+          const props = page.properties || {}
+          const leadName = props['Lead Name']?.title?.[0]?.text?.content || ''
+          const day1Done = props['Day 1']?.checkbox === true
+          
+          // Already completed Day 1
+          if (day1Done) return new Response(`Halo lagi! Day 1 sudah dikirim. Besok jam 7 pagi kita lanjut Day 2 ya 🌸`)
+          
+          // Parse progress: "phone — name || city:xx || goal:xx || source:xx"
+          const parts = leadName.split('||')
+          
+          if (parts.length === 1 && !leadName.includes('—')) {
+            // No name — this answer is the name
+            const newName = `${phone} — ${msg}`
+            await fetch(`https://api.notion.com/v1/pages/${page.id}`, {
+              method: 'PATCH',
+              headers: { 'Authorization': `Bearer ${nt}`, 'Notion-Version': '2025-09-03', 'Content-Type': 'application/json' },
+              body: JSON.stringify({ properties: { 'Lead Name': { title: [{ text: { content: newName } }] } } })
+            })
+            return new Response('Dari kota mana, Bunda? 🏙️')
+          }
+          
+          if (parts.length === 1) {
+            // Has name — this answer is the city
+            const updated = `${leadName} || city: ${msg}`
+            await fetch(`https://api.notion.com/v1/pages/${page.id}`, {
+              method: 'PATCH',
+              headers: { 'Authorization': `Bearer ${nt}`, 'Notion-Version': '2025-09-03', 'Content-Type': 'application/json' },
+              body: JSON.stringify({ properties: { 'Lead Name': { title: [{ text: { content: updated } }] } } })
+            })
+            return new Response('Apa tujuan Bunda ikut challenge ini? 🎯')
+          }
+          
+          if (parts.length === 2) {
+            // Has name+city — this answer is the goal
+            const updated = `${leadName} || goal: ${msg}`
+            await fetch(`https://api.notion.com/v1/pages/${page.id}`, {
+              method: 'PATCH',
+              headers: { 'Authorization': `Bearer ${nt}`, 'Notion-Version': '2025-09-03', 'Content-Type': 'application/json' },
+              body: JSON.stringify({ properties: { 'Lead Name': { title: [{ text: { content: updated } }] } } })
+            })
+            return new Response('Darimana Bunda tahu GrowWithIka? (IG, TikTok, Teman, dll) 📱')
+          }
+          
+          if (parts.length === 3) {
+            // Has name+city+goal — this answer is the source
+            const updated = `${leadName} || source: ${msg}`
+            await fetch(`https://api.notion.com/v1/pages/${page.id}`, {
+              method: 'PATCH',
+              headers: { 'Authorization': `Bearer ${nt}`, 'Notion-Version': '2025-09-03', 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                properties: { 
+                  'Lead Name': { title: [{ text: { content: updated } }] },
+                  'Day 1': { checkbox: true },
+                  'Completion Rate': { number: 14.29 }
+                }
+              })
+            })
+            return new Response(`🎉 Terima kasih! Data sudah lengkap.\n\n📚 Day 1: Bangun Mentalitas Bertumbuh\n✅ Tulis 3 hal yang disyukuri\n✅ Set 1 goal kecil\n✅ Baca refleksi mindset\n\nBesok jam 7 pagi kita lanjut Day 2! 🚀`)
+          }
+        }
+      }
+    } catch(e) {}
+
+    return new Response(welcome())
     
   } catch (e: any) {
     console.error('[WEBHOOK]', e.message)
-    return new Response('Error', { status: 200 })
+    return new Response('Maaf ada kesalahan. Silakan coba lagi', { status: 200 })
   }
 }
 
