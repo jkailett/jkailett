@@ -10,17 +10,22 @@ function faqMsg() { return "FAQ — 7-Hari Growth Challenge\n\n❓ Apa itu? Prog
 
 async function aiRespond(msg: string, context: string): Promise<string | null> {
   try {
-    const key = process.env.OPENROUTER_API_KEY || process.env.OPENROUTER_KEY || ''
+    const key = process.env.DEEPSEEK_API_KEY || process.env.OPENROUTER_API_KEY || ''
     if (!key) return null
     
-    const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const resp = await fetch('https://api.deepseek.com/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'deepseek/deepseek-chat:free',
+        model: 'deepseek-chat',
         messages: [
           { role: 'system', content: `Kamu asisten GrowWithIka untuk ibu Indonesia. Natural, hangat, pakai "Bunda". Maks 200 karakter.
-Info: 7-Hari Growth Challenge GRATIS (leadership mindset, earning potential). 3 Level: Growth Foundation (gratis), Leadership Mastery (premium), Business Atomy (opsional). Ika Irawati = Maxwell Certified Coach & Atomy Master.
+
+Info:
+- 7-Hari Growth Challenge GRATIS (leadership mindset, earning potential)
+- 3 Level: Growth Foundation (gratis), Leadership Mastery (premium), Business Atomy (opsional)
+- Ika Irawati: Maxwell Certified Coach & Atomy Master Distributor
+
 ${context}
 JANGAN sebut AI/bot. Bicara sebagai perwakilan komunitas.` },
           { role: 'user', content: msg }
