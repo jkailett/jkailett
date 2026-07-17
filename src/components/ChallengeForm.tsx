@@ -23,7 +23,7 @@ export default function ChallengeForm() {
     if (phone.startsWith('0')) phone = '62' + phone.slice(1)
     if (!phone.startsWith('62')) phone = '62' + phone
     const targetPhone = '6285312000796'
-    const message = 'Halo Ren Coach, saya ' + data.name + ' ingin gabung 7-Hari Growth Challenge gratis'
+    const message = 'Halo Admin, saya ' + data.name + ' mau ikut 7 Hari Memulai Perubahan'
     window.open('https://wa.me/' + targetPhone + '?text=' + encodeURIComponent(message), '_blank')
     setStatus('success')
     reset()

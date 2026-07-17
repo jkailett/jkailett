@@ -38,9 +38,9 @@ export default function Navbar() {
           <Link
             href="/"
             className="font-heading text-2xl sm:text-3xl font-medium text-sage-green-dark hover:opacity-80 transition-opacity"
-            aria-label="GrowWithIka - Home"
+            aria-label="Komunitas%20Tumbuh%20Bersama - Home"
           >
-            GrowWithIka
+            Komunitas%20Tumbuh%20Bersama
           </Link>
 
           {/* Desktop Nav */}
@@ -113,7 +113,7 @@ export default function Navbar() {
                   </Link>
 
                   <a
-                    href="https://wa.me/6285312000796?text=Halo%20Ren%20Coach%2C%20saya%20mau%20daftar%207-Hari%20Growth%20Challenge"
+                    href="https://wa.me/6285312000796?text=Halo%20Admin%2C%20saya%20mau%20daftar%207%20Hari%20Memulai%20Perubahan"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn-secondary w-full text-center"

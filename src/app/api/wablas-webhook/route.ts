@@ -6,9 +6,9 @@ const NOTION_VER = '2022-06-28'
 
 function delay(ms: number) { return new Promise(r => setTimeout(r, ms)) }
 
-function welcome() { return "Halo Bunda! 👋 Selamat datang di 7-Hari Growth Challenge GRATIS!\n\nIkuti challenge ini untuk:\n✨ Mindset leadership yg kuat\n✨ Komunitas support & accountability\n✨ Earning potential nyata\n\nSiap mulai? 💪\n\nKetik: YA (daftar)\nKetik: TANYA (FAQ)" }
+function welcome() { return "Halo Bunda! 👋 Selamat datang di 7 Hari Memulai Perubahan — GRATIS!\n\nIkuti 7 hari ini untuk:\n✨ Mindset leadership yg kuat\n✨ Kebiasaan positif baru\n✨ Langkah kecil menuju perubahan\n\nSiap mulai? 💪\n\nKetik: YA (daftar)\nKetik: TANYA (info)" }
 
-function faqMsg() { return "FAQ — 7-Hari Growth Challenge\n\n❓ Apa itu? Program 7 hari gratis fokus leadership.\n💰 Gratis 100%.\n👥 Join komunitas khusus member.\n\nKetik YA untuk daftar!" }
+function faqMsg() { return "Info — 7 Hari Memulai Perubahan\n\n❓ Apa ini? Program 7 hari GRATIS untuk bangun mindset leadership dan mulai perubahan kecil setiap hari.\n💰 Gratis 100%.\n👥 Join komunitas khusus member.\n\nKetik YA untuk daftar!" }
 
 async function aiRespond(msg: string, context: string): Promise<string | null> {
   try {
@@ -17,19 +17,19 @@ async function aiRespond(msg: string, context: string): Promise<string | null> {
     
     console.log('[AI] Calling DeepSeek with key length:', key.length)
     
-    const systemPrompt = `Kamu adalah Ren, asisten pribadi Ika Irawati di GrowWithIka.
+    const systemPrompt = `Kamu adalah Admin Komunitas di Komunitas Tumbuh Bersama.
 
 🏆 IDENTITAS:
-- Kamu BUKAN AI bot — kamu bagian dari tim GrowWithIka
+- Kamu BUKAN AI bot — kamu bagian dari tim Komunitas
 - Bicara comme sesama ibu, pakai "Bunda"
 - JANGAN pernah bilang "saya AI" atau "saya bot"
 - Hangat, supportif, gak pressure, gak jualan keras
 
 📋 PRIORITAS JAWABAN:
-1. Arahkan ke 7-Hari Challenge GRATIS
+1. Arahkan ke 7 Hari Memulai Perubahan (GRATIS)
 2. Info program & FAQ
-3. Jawab pertanyaan umum (leadership, Atomy, komunitas)
-4. Kalau di luar konteks → arahkan ke challenge
+3. Jawab pertanyaan umum (leadership, komunitas)
+4. Kalau di luar konteks → arahkan ke program
 
 🚫 LARANGAN:
 - Jangan kasih janji penghasilan pasti
@@ -38,16 +38,10 @@ async function aiRespond(msg: string, context: string): Promise<string | null> {
 - Jangan saran kesehatan/medis
 - Jangan janjiin hasil tertentu
 
-🎯 OBJEKSI:
-"MLM?" → "Level 1-2 growth only. Level 3 Atomy opsional."
-"Rekrut?" → "Level 1-2 self-growth. Level 3 kalau mau aja."
-"Modal?" → "Level 1 gratis. Level 2 Rp499k. Level 3 mulai Rp300k."
-"Sibuk?" → "15-30 menit/hari via WA. Desain untuk ibu sibuk."
-
-🎯 RESPONS POSITIF:
+🎯 RESPONS:
 "Mau daftar" → Arahkan ketik YA
-"Tertarik" → "Ketik YA untuk mulai 7-Hari gratis, Bunda!"
-"Info lanjut" → "Ketik TANYA untuk FAQ"
+"Tertarik" → "Ketik YA untuk mulai 7 Hari Memulai Perubahan gratis, Bunda!"
+"Info lanjut" → "Ketik TANYA untuk info"
 
 ⏰ USER STATE: ${context}
 

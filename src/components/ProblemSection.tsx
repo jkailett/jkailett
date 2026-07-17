@@ -129,7 +129,7 @@ export default function ProblemSection() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="body-lg text-soft-black/70 mb-8"
           >
-            Di GrowWithIka, kamu akan belajar membangun kepemimpinan, kesehatan, dan bisnis secara bertahap dalam komunitas yang saling mendukung.
+            Di Komunitas%20Tumbuh%20Bersama, kamu akan belajar membangun kepemimpinan, kesehatan, dan bisnis secara bertahap dalam komunitas yang saling mendukung.
           </motion.p>
 
           <motion.p

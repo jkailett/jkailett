@@ -26,9 +26,9 @@ export default function Footer() {
             transition={{ duration: 0.6, ease: 'easeOut' }}
             className="lg:col-span-1"
           >
-            <Link href="/" className="inline-block mb-6" aria-label="GrowWithIka - Home">
+            <Link href="/" className="inline-block mb-6" aria-label="Komunitas%20Tumbuh%20Bersama - Home">
               <span className="font-heading text-2xl sm:text-3xl font-medium text-sage-green-dark tracking-tight">
-                GrowWithIka
+                Komunitas%20Tumbuh%20Bersama
               </span>
             </Link>
             <p className="body-base text-soft-black/70 mb-6 max-w-xs">
@@ -40,7 +40,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-warm-border flex items-center justify-center text-sage-green hover:bg-sage-green hover:text-white transition-all duration-300"
-                aria-label="Instagram GrowWithIka"
+                aria-label="Instagram Komunitas%20Tumbuh%20Bersama"
               >
                 <Instagram className="w-5 h-5" aria-hidden="true" />
               </a>
@@ -49,7 +49,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-warm-border flex items-center justify-center text-sage-green hover:bg-sage-green hover:text-white transition-all duration-300"
-                aria-label="YouTube GrowWithIka"
+                aria-label="YouTube Komunitas%20Tumbuh%20Bersama"
               >
                 <Youtube className="w-5 h-5" aria-hidden="true" />
               </a>
@@ -58,7 +58,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-warm-border flex items-center justify-center text-sage-green hover:bg-sage-green hover:text-white transition-all duration-300"
-                aria-label="TikTok GrowWithIka"
+                aria-label="TikTok Komunitas%20Tumbuh%20Bersama"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
@@ -123,7 +123,7 @@ export default function Footer() {
                 <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
               </Link>
               <a
-                href="https://wa.me/6285312000796?text=Halo%20Ren%20Coach%2C%20saya%20tertarik%20dengan%207-Hari%20Growth%20Challenge"
+                href="https://wa.me/6285312000796?text=Halo%20Admin%2C%20saya%20tertarik%20dengan%207%20Hari%20Memulai%20Perubahan"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-secondary w-full sm:w-auto text-center group"
@@ -146,7 +146,7 @@ export default function Footer() {
         >
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4 text-sm text-text-muted">
             <p className="text-center lg:text-left">
-              © {new Date().getFullYear()} GrowWithIka. Growth First, Business Later.
+              © {new Date().getFullYear()} Komunitas%20Tumbuh%20Bersama. Growth First, Business Later.
             </p>
             <div className="flex items-center gap-4 text-center lg:text-right">
               <Link

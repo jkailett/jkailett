@@ -83,7 +83,7 @@ export default function KenalanDenganIka() {
             </motion.p>
 
             <motion.a
-              href="https://wa.me/6285312000796?text=Halo%20Ren%20Coach%2C%20saya%20mau%20konsultasi%20gratis%20tentang%20GrowWithIka"
+              href="https://wa.me/6285312000796?text=Halo%20Admin%2C%20saya%20mau%20konsultasi%20gratis%20tentang%20Komunitas%20Tumbuh%20Bersama"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-primary inline-flex group"
@@ -115,7 +115,7 @@ export default function KenalanDenganIka() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 max-w-3xl mx-auto">
             <TrustBadge icon={CheckCircle2} text="Atomy Business Leader" />
             <TrustBadge icon={CheckCircle2} text="Maxwell Leadership Certified" />
-            <TrustBadge icon={CheckCircle2} text="Founder GrowWithIka" />
+            <TrustBadge icon={CheckCircle2} text="Founder Komunitas%20Tumbuh%20Bersama" />
             <TrustBadge icon={CheckCircle2} text="Ibu & Istri Bahagia" />
           </div>
         </motion.div>

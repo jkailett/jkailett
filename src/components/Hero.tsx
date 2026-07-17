@@ -24,9 +24,9 @@ export default function Hero() {
             transition={{ duration: 0.6, ease: 'easeOut' }}
             className="mb-10"
           >
-            <Link href="/" className="inline-block" aria-label="GrowWithIka - Home">
+            <Link href="/" className="inline-block" aria-label="Komunitas%20Tumbuh%20Bersama - Home">
               <span className="font-heading text-3xl sm:text-4xl font-medium text-sage-green-dark tracking-tight">
-                GrowWithIka
+                Komunitas%20Tumbuh%20Bersama
               </span>
             </Link>
           </motion.div>
@@ -105,7 +105,7 @@ export default function Hero() {
             </span>
             <span className="badge badge-sage" role="listitem">
               <CheckCircle2 className="w-3 h-3 mr-1.5" aria-hidden="true" />
-              Founder GrowWithIka
+              Founder Komunitas%20Tumbuh%20Bersama
             </span>
             <span className="badge badge-terracotta" role="listitem">
               Growth First, Business Later
