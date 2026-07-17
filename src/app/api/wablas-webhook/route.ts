@@ -71,6 +71,10 @@ export async function POST(req: Request) {
     
     const mLower = msg.toLowerCase().trim()
 
+    // SILENT — tidak balas, bikin natural kayak manusia silent aja
+    if (['ok','oke','okay','oh','ohh','owh','owh gitu','ya udah','oke sip','sip','noted','baik','baik2','baik2 aja','bae','bae2'].some(k => mLower === k || mLower.startsWith(k)))
+      return new Response('ok')
+
     // STOP
     if (['stop','berhenti','cancel','batal','keluar'].some(k => mLower.includes(k)))
       return new Response('Kamu berhenti menerima broadcast. Ketik MULAI kapan saja untuk bergabung kembali.')
