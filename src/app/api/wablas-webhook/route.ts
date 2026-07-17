@@ -4,14 +4,18 @@ const WABLAS_SECRET = 'HcU2B9tK'
 const NOTION_DB_ID = '39d95b59-1c49-81ac-b7d7-cff618972925'
 const NOTION_VER = '2022-06-28'
 
+function delay(ms: number) { return new Promise(r => setTimeout(r, ms)) }
+
 function welcome() { return "Halo Bunda! 👋 Selamat datang di 7-Hari Growth Challenge GRATIS!\n\nIkuti challenge ini untuk:\n✨ Mindset leadership yg kuat\n✨ Komunitas support & accountability\n✨ Earning potential nyata\n\nSiap mulai? 💪\n\nKetik: YA (daftar)\nKetik: TANYA (FAQ)" }
 
 function faqMsg() { return "FAQ — 7-Hari Growth Challenge\n\n❓ Apa itu? Program 7 hari gratis fokus leadership.\n💰 Gratis 100%.\n👥 Join komunitas khusus member.\n\nKetik YA untuk daftar!" }
 
 async function aiRespond(msg: string, context: string): Promise<string | null> {
   try {
-    const key = process.env.DEEPSEEK_API_KEY || process.env.OPENROUTER_API_KEY || ''
-    if (!key) return null
+    const key = process.env.DEEPSEEK_API_KEY || ''
+    if (!key || key.length < 10) return null
+    
+    console.log('[AI] Calling DeepSeek with key length:', key.length)
     
     const systemPrompt = `Kamu adalah Ren, asisten pribadi Ika Irawati di GrowWithIka.
 
@@ -125,10 +129,13 @@ export async function POST(req: Request) {
 
     const mLower = msg.toLowerCase().trim()
 
-    // SILENT — 204 No Content, Wablas gak kirim apa2
-    const silent = ['ok','oke','okay','oh','ohh','owh','ya udah','sip','noted','baik','baik2','bae','hmm','hm','he eh','yoi']
-    if (silent.some(k => mLower === k || mLower.startsWith(k)))
+    // SILENT — diam total, no delay
+    const silentWords = ['ok','oke','okay','oh','ohh','owh','ya udah','sip','noted','baik','baik2','bae','hmm','hm','he eh','yoi']
+    if (silentWords.some(k => mLower === k || mLower.startsWith(k)))
       return new Response(null, { status: 204 })
+
+    // Delay 20-35 detik biar natural kayak manusia ngetik
+    await delay(20000 + Math.random() * 15000)
 
     // STOP
     if (['stop','berhenti','cancel','batal','keluar'].some(k => mLower.includes(k)))
