@@ -5,63 +5,80 @@ const WABLAS_SECRET = process.env.WABLAS_SECRET || 'HcU2B9tK'
 const WABLAS_API = 'https://tegal.wablas.com/api'
 const NOTION_DB_ID = '39d95b591c4981acb7d7cff618972925'
 
-interface UserState {
-  step: number
-  data: Record<string, string>
-}
+const WELCOME = `Halo Bunda! 👋 Selamat datang di 7-Hari Growth Challenge GRATIS!\n\nSiap mulai? Ketik: YA (daftar) atau TANYA (FAQ) 💪`
 
-const userStates = new Map<string, UserState>()
+const FAQ = `FAQ — 7-Hari Growth Challenge\n\n❓ Apa itu? Program 7 hari gratis fokus leadership.\n💰 Gratis 100%.\n👥 Join komunitas khusus member.\n\nKetik YA untuk daftar!`
 
-// Adaptive greeting keywords (case-insensitive)
-const GREETING_KEYWORDS = [
-  'hai', 'halo', 'hello', 'hi', 'hey', 'selamat', 'pagi', 'siang', 'sore', 'malam',
-  'assalamualaikum', 'assalamu\'alaikum', 'asslm', 'assalam',
-  'tes', 'test', 'coba', 'mau', 'mulai', 'join', 'gabung', 'daftar',
-  'bangun', 'tumbuh', 'growth',
-]
-
-const YES_KEYWORDS = ['ya', 'iya', 'y', 'yes', 'siap', 'oke', 'ok', 'okay', 'mau dong', 'iya dong', 'tentu', 'lanjut']
-
-const HELP_KEYWORDS = ['tanya', 'help', 'bantu', 'info', 'faq', 'apa itu', 'bagaimana']
-const STOP_KEYWORDS = ['stop', 'berhenti', 'cancel', 'batal', 'keluar', 'selesai']
-
-const QUESTIONS = [
-  { step: 1, field: 'name', question: 'Siapa nama lengkap Bunda? 🌸' },
-  { step: 2, field: 'city', question: 'Dari kota mana, Bunda? 🏙️' },
-  { step: 3, field: 'goal', question: 'Apa tujuan Bunda ikut challenge ini? 🎯' },
-  { step: 4, field: 'source', question: 'Darimana Bunda tahu GrowWithIka? (IG, TikTok, Teman, Lainnya) 📱' },
-]
-
-function keywordMatch(text: string, keywords: string[]): boolean {
+function keywordMatch(text: string, keywords: string[]) {
   const lower = text.toLowerCase().trim()
-  return keywords.some(kw => lower === kw || lower.startsWith(kw) || lower.includes(kw))
+  return keywords.some(kw => lower.includes(kw) || lower.startsWith(kw) || lower === kw)
 }
 
 async function sendWablas(phone: string, message: string) {
   const url = `${WABLAS_API}/send-message?token=${WABLAS_TOKEN}.${WABLAS_SECRET}&phone=${encodeURIComponent(phone)}&message=${encodeURIComponent(message)}`
-  await fetch(url).catch(e => console.error('[WABLAS] Send error:', e.message))
+  await fetch(url)
 }
 
-async function notionCreateEntry(phone: string, name: string) {
+async function notionQuery(phone: string) {
   const key = process.env.NOTION_TOKEN
   if (!key) return null
   
-  const resp = await fetch('https://api.notion.com/v1/pages', {
+  const resp = await fetch(`https://api.notion.com/v1/databases/${NOTION_DB_ID}/query`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${key}`, 'Notion-Version': '2025-09-03', 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      filter: {
+        property: 'Lead Name',
+        title: { contains: phone }
+      }
+    })
+  })
+  const data = await resp.json()
+  return data.results?.[0] || null
+}
+
+async function notionCreate(phone: string, name: string) {
+  const key = process.env.NOTION_TOKEN
+  if (!key) return
+  
+  await fetch('https://api.notion.com/v1/pages', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${key}`, 'Notion-Version': '2025-09-03', 'Content-Type': 'application/json' },
     body: JSON.stringify({
       parent: { database_id: NOTION_DB_ID },
       properties: {
         'Lead Name': { title: [{ text: { content: `${phone} — ${name || 'N/A'}` } }] },
-        'Day 1': { checkbox: true },
+        'Day 1': { checkbox: false },
         'Completed': { checkbox: false },
-        'Completion Rate': { number: 14.29 },
+        'Completion Rate': { number: 0 },
       }
     })
   })
+}
+
+async function notionUpdate(pageId: string, field: string, value: any) {
+  const key = process.env.NOTION_TOKEN
+  if (!key) return
   
-  const result = await resp.json()
-  return result.id || null
+  if (field === 'name') {
+    // Store as Lead Name = "Phone — Name"
+    await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
+      method: 'PATCH',
+      headers: { 'Authorization': `Bearer ${key}`, 'Notion-Version': '2025-09-03', 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        properties: { 'Lead Name': { title: [{ text: { content: value } }] } }
+      })
+    })
+  }
+  if (field === 'day1') {
+    await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
+      method: 'PATCH',
+      headers: { 'Authorization': `Bearer ${key}`, 'Notion-Version': '2025-09-03', 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        properties: { 'Day 1': { checkbox: true }, 'Completion Rate': { number: 14.29 } }
+      })
+    })
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -69,68 +86,86 @@ export async function POST(req: NextRequest) {
     const data = await req.json()
     const rawMsg = (data?.message || data?.text || '').trim()
     const phone = data?.phone || data?.from || ''
-
     if (!phone) return NextResponse.json({ status: false, error: 'No phone' })
 
-    const message = rawMsg.toLowerCase().trim()
+    const msgLower = rawMsg.toLowerCase().trim()
 
-    // === STOP keywords — priority check (even during flow) ===
-    if (keywordMatch(message, STOP_KEYWORDS)) {
-      userStates.delete(phone)
+    // === STOP ===
+    if (keywordMatch(msgLower, ['stop', 'berhenti', 'cancel', 'batal', 'keluar', 'selesai'])) {
       return NextResponse.json({ status: true, message: 'Unsubscribed' })
     }
 
-    // Check if user is in state flow (answering questions)
-    const state = userStates.get(phone)
-    
-    if (state && state.step >= 1 && state.step <= QUESTIONS.length) {
-      // User is answering a question — save answer and proceed
-      const currentQ = QUESTIONS[state.step - 1]
-      state.data[currentQ.field] = rawMsg  // Keep original case
-      state.step++
-
-      if (state.step > QUESTIONS.length) {
-        // All questions answered
-        await notionCreateEntry(phone, state.data.name || '')
-        
-        const day1 = `🎉 Terima kasih ${state.data.name || 'Bunda'} dari ${state.data.city || 'Indonesia'}! Data sudah tersimpan.\n\n📚 *Day 1: Bangun Mentalitas Bertumbuh*\n\nKesuksesan dimulai dari dalam. Hari ini:\n✅ Tulis 3 hal yang Bunda syukuri\n✅ Set 1 goal kecil untuk besok\n✅ Baca refleksi mindset\n\nBesok jam 7 pagi kita lanjut Day 2! 🚀`
-        
-        await sendWablas(phone, day1)
-        userStates.delete(phone)
-        return NextResponse.json({ status: true, message: 'Complete', data: state.data })
-      }
-
-      // Send next question
-      await sendWablas(phone, QUESTIONS[state.step - 1].question)
-      return NextResponse.json({ status: true, message: `Question ${state.step} sent` })
-    }
-
-    // === YES keywords — start data collection ===
-    if (keywordMatch(message, YES_KEYWORDS) && !keywordMatch(message, GREETING_KEYWORDS)) {
-      userStates.set(phone, { step: 1, data: {} })
-      await sendWablas(phone, QUESTIONS[0].question)
-      return NextResponse.json({ status: true, message: 'Flow started' })
-    }
-
-    // === HELP keywords ===
-    if (keywordMatch(message, HELP_KEYWORDS)) {
-      const faq = `FAQ — 7-Hari Growth Challenge\n\n❓ Apa itu? Program 7 hari transformasi leadership gratis.\n💰 Gratis 100% — tidak ada biaya.\n👥 Join komunitas khusus member.\n\nKetik YA untuk daftar sekarang!`
-      await sendWablas(phone, faq)
+    // === HELP ===
+    if (keywordMatch(msgLower, ['tanya', 'help', 'bantu', 'info', 'faq', 'apa itu'])) {
+      await sendWablas(phone, FAQ)
       return NextResponse.json({ status: true, message: 'FAQ sent' })
     }
 
-    // === GREETING keywords (including MULAI, HAI, etc.) ===
-    if (keywordMatch(message, GREETING_KEYWORDS)) {
-      const welcome = `Halo Bunda! 👋 Selamat datang di 7-Hari Growth Challenge GRATIS dari Komunitas Tumbuh Bersama!\n\nIkuti challenge ini untuk:\n✨ Mindset leadership yang kuat\n✨ Komunitas support & accountability\n✨ Earning potential yang nyata\n\nSiap mulai? Ketik: YA (daftar) atau TANYA (FAQ) 💪`
-      await sendWablas(phone, welcome)
+    // === YES ===
+    if (keywordMatch(msgLower, ['ya', 'iya', 'y', 'yes', 'siap', 'oke', 'ok', 'lanjut', 'mau'])) {
+      await notionCreate(phone, '')
+      await sendWablas(phone, 'Siapa nama lengkap Bunda? 🌸')
+      return NextResponse.json({ status: true, message: 'Flow started' })
+    }
+
+    // === GREETINGS ===
+    if (keywordMatch(msgLower, ['hai', 'halo', 'hello', 'hi', 'hey', 'selamat', 'pagi', 'siang', 'sore', 'malam',
+        'assalamualaikum', 'mulai', 'join', 'gabung', 'daftar', 'mau', 'tes', 'test', 'coba', 'bangun', 'tumbuh'])) {
+      await sendWablas(phone, WELCOME)
       return NextResponse.json({ status: true, message: 'Welcome sent' })
     }
 
-    // Fallback — unknown message, try to match anyway
-    // If user sends something that's not clearly a greeting/yes/help/stop, treat as greeting response
-    userStates.set(phone, { step: 1, data: {} })
-    await sendWablas(phone, QUESTIONS[0].question)
-    return NextResponse.json({ status: true, message: 'Fallback flow started' })
+    // === ANYTHING ELSE — check if user is in flow (has Notion entry without data) ===
+    const existing = await notionQuery(phone)
+    
+    if (!existing) {
+      // Unknown user — treat as greeting
+      await sendWablas(phone, WELCOME)
+      return NextResponse.json({ status: true, message: 'Welcome sent' })
+    }
+
+    // User exists — parse progress from Lead Name field
+    const props = existing.properties || {}
+    const leadName = props['Lead Name']?.title?.[0]?.text?.content || ''
+    const alreadyComplete = props['Day 1']?.checkbox === true
+
+    if (alreadyComplete) {
+      await sendWablas(phone, `Halo lagi! Day 1 sudah dikirim. Besok jam 7 pagi kita lanjut Day 2 ya 🌸`)
+      return NextResponse.json({ status: true, message: 'Already completed' })
+    }
+
+    // Parse progress: "phone — name || city:xx || goal:xx || source:xx"
+    const parts = leadName.split('||')
+    
+    if (parts.length === 1 && !leadName.includes('—')) {
+      // Step 0: No name yet → save name
+      const newLeadName = `${phone} — ${rawMsg}`
+      await notionUpdate(existing.id, 'name', newLeadName)
+      await sendWablas(phone, 'Dari kota mana, Bunda? 🏙️')
+    } else if (parts.length === 1) {
+      // Step 1: Has name, need city
+      const base = leadName.split('—')[1]?.trim() || rawMsg
+      const updated = `${leadName} || city: ${rawMsg}`
+      await notionUpdate(existing.id, 'name', updated)
+      await sendWablas(phone, 'Apa tujuan Bunda ikut challenge ini? 🎯')
+    } else if (parts.length === 2) {
+      // Step 2: Has name+city, need goal
+      const updated = `${leadName} || goal: ${rawMsg}`
+      await notionUpdate(existing.id, 'name', updated)
+      await sendWablas(phone, 'Darimana Bunda tahu GrowWithIka? (IG, TikTok, Teman, dll) 📱')
+    } else if (parts.length === 3) {
+      // Step 3: Has name+city+goal, need source
+      const updated = `${leadName} || source: ${rawMsg}`
+      await notionUpdate(existing.id, 'name', updated)
+      await notionUpdate(existing.id, 'day1', true)
+      const day1text = `🎉 Terima kasih! Data sudah lengkap.\n\n📚 *Day 1: Bangun Mentalitas Bertumbuh*\n✅ Tulis 3 hal yang disyukuri\n✅ Set 1 goal kecil\n✅ Baca refleksi mindset\n\nBesok jam 7 pagi kita lanjut! 🚀`
+      await sendWablas(phone, day1text)
+    } else {
+      // Already in progress - send appropriate next step
+      await sendWablas(phone, `Halo lagi! Silakan lanjutkan jawab pertanyaan sebelumnya ya 🌸`)
+    }
+
+    return NextResponse.json({ status: true, message: 'Processed' })
   } catch (error: any) {
     console.error('[WEBHOOK] Error:', error.message)
     return NextResponse.json({ status: false, error: error.message })
@@ -138,5 +173,5 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
-  return NextResponse.json({ status: true, message: 'Webhook active', active_users: userStates.size })
+  return NextResponse.json({ status: true, message: 'Webhook active' })
 }
