@@ -80,7 +80,7 @@ export async function POST(req: Request) {
       return new Response(faq())
 
     // YES — create Notion entry, ask name
-    if (['ya','iya','y','yes','siap','oke','ok','okay','lanjut','mau'].some(k => mLower === k || mLower.startsWith(k))) {
+    if (['ya','iya','y','yes','siap','oke','lanjut','mau dong'].some(k => mLower === k || mLower.startsWith(k))) {
       await notionCreate(phone, data?.pushName || '')
       return new Response('Siapa nama lengkap Bunda? 🌸')
     }
