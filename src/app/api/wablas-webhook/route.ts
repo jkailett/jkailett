@@ -128,102 +128,96 @@ export async function POST(req: Request) {
     if (silentWords.some(k => mLower === k || mLower.startsWith(k)))
       return new Response(null, { status: 204 })
 
-    // Delay 12-25 detik biar natural
-    await delay(12000 + Math.random() * 13000)
+    // Delay 8-15 detik — lebih responsif
+    await delay(8000 + Math.random() * 7000)
 
-    // STEP 1: Sequential flow (data CRM) — cek Notion untuk user yang sedang isi data
+    // Cek Notion — user existing atau baru
     const page = await notionQuery(phone)
-    
+
+    // === USER EXISTING: sequential flow (data CRM) ===
     if (page) {
       const props = page.properties || {}
       const leadName = props['Lead Name']?.title?.[0]?.text?.content || ''
       const day1Done = props['Day 1']?.checkbox === true
+      
+      if (day1Done) {
+        // Day 1 selesai → AI handle natural
+        const ai = await aiRespond(msg, "User sudah selesai Day 1, menunggu Day 2.")
+        if (ai) return new Response(ai)
+        return new Response(`Halo Bunda! Besok jam 7 pagi kita lanjut Day 2 ya! Semangat! 🌸`)
+      }
+
       const parts = leadName.split('||')
       
-      if (!day1Done && parts.length >= 1) {
-        // Masih dalam sequential flow: name → city → goal → source
-        if (parts.length === 1 && !leadName.includes('—')) {
-          const newName = `${phone} — ${msg}`
-          await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: newName } }] } } })
-          return new Response('Dari kota mana, Bunda? 🏙️')
-        }
-        if (parts.length === 1) {
-          const updated = `${leadName} || city: ${msg}`
-          await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: updated } }] } } })
-          return new Response('Apa tujuan Bunda ikut challenge ini? 🎯')
-        }
-        if (parts.length === 2) {
-          const updated = `${leadName} || goal: ${msg}`
-          await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: updated } }] } } })
-          return new Response('Darimana Bunda tahu Komunitas Tumbuh Bersama? 📱')
-        }
-        if (parts.length === 3) {
-          const updated = `${leadName} || source: ${msg}`
-          await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: updated } }] }, 'Day 1': { checkbox: true }, 'Completion Rate': { number: 14.29 } } })
-          return new Response(`🎉 Terima kasih! Data sudah lengkap.\n\n📚 Day 1: Mulai dari Dalam\n✅ Tulis 3 hal yang disyukuri\n✅ Set 1 goal kecil hari ini\n✅ Baca refleksi mindset\n\nKerjakan dulu ya Bunda, besok kita lanjut Day 2! 🚀`)
-        }
+      // Data CRM: name → city → goal → source
+      if (parts.length === 1 && !leadName.includes('—')) {
+        // User baru isi nama
+        const newName = `${phone} — ${msg}`
+        await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: newName } }] } } })
+        return new Response('Dari kota mana, Bunda? 🏙️')
+      }
+      if (parts.length === 1) {
+        const upd = `${leadName} || city: ${msg}`
+        await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: upd } }] } } })
+        return new Response('Apa tujuan Bunda ikut challenge ini? 🎯')
+      }
+      if (parts.length === 2) {
+        const upd = `${leadName} || goal: ${msg}`
+        await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: upd } }] } } })
+        return new Response('Darimana Bunda tahu Komunitas Tumbuh Bersama? 📱')
+      }
+      if (parts.length === 3) {
+        const upd = `${leadName} || source: ${msg}`
+        await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: upd } }] }, 'Day 1': { checkbox: true }, 'Completion Rate': { number: 14.29 } } })
+        return new Response(`🎉 Terima kasih! Data sudah lengkap.\n\n📚 Day 1: Mulai dari Dalam\n✅ Tulis 3 hal yang disyukuri\n✅ Set 1 goal kecil hari ini\n✅ Baca refleksi mindset\n\nKerjakan dulu ya Bunda, besok kita lanjut Day 2! 🚀`)
       }
     }
 
-    // STEP 2: YES keyword — mulai daftar/isi data (prioritas di atas AI)
-    if (['ya','iya','siap','oke','lanjut','mau dong'].some(k => mLower === k || mLower.startsWith(k))) {
-      if (!page) {
-        // User baru — buat entry Notion, tanya nama
-        await notionCreate(phone, data?.pushName || '')
-        return new Response('Siapa nama lengkap Bunda? 🌸')
-      } else {
-        const day1Done = page.properties?.['Day 1']?.checkbox === true
-        if (day1Done) {
-          // User udah selesai Day 1 — AI handle lebih natural
-          const ai = await aiRespond(msg, "User sudah selesai Day 1.")
-          if (ai) return new Response(ai)
-          return new Response(`Halo Bunda! Day 1 sudah dikirim kemarin. Besok jam 7 pagi kita lanjut Day 2 ya! 🌸`)
-        } else {
-          // User udah terdaftar tapi belum isi data — lanjut flow
-          return new Response('Siapa nama lengkap Bunda? 🌸')
-        }
-      }
+    // === USER BARU: langsung data collection tanpa "ketik YA" ===
+    // Deteksi intent: greeting, mau ikut, tertarik, daftar, coba
+    const intentMauIkut = ['ya','iya','siap','mau','ikut','daftar','join','gabung','coba','tes','test',
+      'tertarik','pingin','pengen','ingin','belajar','mulai','lanjut','saya mau','saya ingin','saya pengen',
+      'mau dong','ayo','gas','yuk']
+    
+    if (intentMauIkut.some(k => mLower === k || mLower.startsWith(k) || mLower.includes(k))) {
+      await notionCreate(phone, data?.pushName || '')
+      return new Response('Senang sekali Bunda tertarik! 🌸\n\nSebelum mulai, saya mau kenalan dulu ya.\n\nSiapa nama lengkap Bunda?')
     }
 
-    // STEP 3: STOP
+    // GREETINGS — welcome + langsung tanya nama
+    if (['hai','halo','hello','hi','hey','selamat','pagi','siang','sore','malam',
+        'assalamualaikum','asslm'].some(k => mLower.includes(k))) {
+      await notionCreate(phone, data?.pushName || '')
+      return new Response(`Halo Bunda! 👋 Selamat datang di Komunitas Tumbuh Bersama.\n\nKami punya program 7 Hari Memulai Perubahan — GRATIS. Dirancang khusus untuk ibu-ibu hebat seperti Bunda.\n\nSebelum mulai, saya mau kenalan dulu ya.\n\nSiapa nama lengkap Bunda? 🌸`)
+    }
+
+    // STOP
     if (['stop','berhenti','cancel','batal','keluar'].some(k => mLower.includes(k)))
       return new Response('Kamu berhenti menerima broadcast. Ketik MULAI kapan saja untuk bergabung kembali.')
 
-    // STEP 4: HELP
+    // HELP
     if (['tanya','help','bantu','info','faq','apa itu','bagaimana'].some(k => mLower.includes(k)))
       return new Response(faqMsg())
 
-    // STEP 5: GREETINGS
-    if (['hai','halo','hello','hi','hey','selamat','pagi','siang','sore','malam','assalamualaikum','asslm','mulai','join','gabung','daftar','coba','tes','test'].some(k => mLower.includes(k)))
-      return new Response(welcome())
-
-    // STEP 6: Day 1 done + unknown message → AI
-    if (page && page.properties?.['Day 1']?.checkbox === true) {
-      const ai = await aiRespond(msg, "User sudah selesai Day 1, menunggu Day 2.")
-      if (ai) return new Response(ai)
-    }
-
-    // STEP 7: AI FIRST — untuk semua yg belum match
+    // AI FIRST — untuk semua yg belum match
     let chatHistory = ''
     if (page) {
       const notes = page.properties?.['Notes']?.rich_text?.[0]?.text?.content || ''
       if (notes) chatHistory = `\n\nRiwayat chat:\n${notes}`
     }
-    const state = page ? "User sudah terdaftar." : "User baru."
-    const aiMsg = await aiRespond(msg, state + chatHistory)
+    const aiMsg = await aiRespond(msg, (page ? "User sudah terdaftar." : "User baru.") + chatHistory)
     if (aiMsg) {
       if (page) {
         const notes = page.properties?.['Notes']?.rich_text?.[0]?.text?.content || ''
         const updated = (notes ? notes + '\n' : '') + `[Q: ${msg}] [A: ${aiMsg}]`
-        const maxLen = 1900
-        const trimmed = updated.length > maxLen ? updated.slice(-maxLen) : updated
+        const trimmed = updated.length > 1900 ? updated.slice(-1900) : updated
         notionUpdate(page.id, { properties: { 'Notes': { rich_text: [{ text: { content: trimmed } }] } } }).catch(() => {})
       }
       return new Response(aiMsg)
     }
 
     // Final fallback
-    return new Response(`Halo Bunda! Selamat datang di Komunitas Tumbuh Bersama. Ketik YA untuk mulai 7 Hari Memulai Perubahan gratis! 🌸`)
+    return new Response(`Halo Bunda! Selamat datang di Komunitas Tumbuh Bersama. Ada yang bisa dibantu? 😊`)
   } catch (e: any) {
     console.error('[WEBHOOK]', e.message)
     return new Response(null, { status: 204 })
