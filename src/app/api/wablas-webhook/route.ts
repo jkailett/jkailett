@@ -8,6 +8,34 @@ function welcome() { return "Halo Bunda! 👋 Selamat datang di 7-Hari Growth Ch
 
 function faqMsg() { return "FAQ — 7-Hari Growth Challenge\n\n❓ Apa itu? Program 7 hari gratis fokus leadership.\n💰 Gratis 100%.\n👥 Join komunitas khusus member.\n\nKetik YA untuk daftar!" }
 
+async function aiRespond(msg: string, context: string): Promise<string | null> {
+  try {
+    const key = process.env.OPENROUTER_API_KEY || process.env.OPENROUTER_KEY || ''
+    if (!key) return null
+    
+    const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'deepseek/deepseek-chat:free',
+        messages: [
+          { role: 'system', content: `Kamu asisten GrowWithIka untuk ibu Indonesia. Natural, hangat, pakai "Bunda". Maks 200 karakter.
+Info: 7-Hari Growth Challenge GRATIS (leadership mindset, earning potential). 3 Level: Growth Foundation (gratis), Leadership Mastery (premium), Business Atomy (opsional). Ika Irawati = Maxwell Certified Coach & Atomy Master.
+${context}
+JANGAN sebut AI/bot. Bicara sebagai perwakilan komunitas.` },
+          { role: 'user', content: msg }
+        ],
+        max_tokens: 150,
+        temperature: 0.7,
+      })
+    })
+    
+    if (!resp.ok) return null
+    const json = await resp.json()
+    return json?.choices?.[0]?.message?.content?.trim() || null
+  } catch { return null }
+}
+
 async function notionQuery(phone: string) {
   const nt = process.env.NOTION_TOKEN || ''
   if (!nt) return null
@@ -87,45 +115,54 @@ export async function POST(req: Request) {
     if (['hai','halo','hello','hi','hey','selamat','pagi','siang','sore','malam','assalamualaikum','asslm','mulai','join','gabung','daftar','coba','tes','test'].some(k => mLower.includes(k)))
       return new Response(welcome())
 
-    // ANYTHING ELSE — cek Notion
+    // ANYTHING ELSE — cek Notion dulu (sequential flow), lalu AI fallback
     const page = await notionQuery(phone)
-    if (!page) return new Response(welcome())
+    
+    if (page) {
+      const props = page.properties || {}
+      const leadName = props['Lead Name']?.title?.[0]?.text?.content || ''
+      const day1Done = props['Day 1']?.checkbox === true
+      
+      if (day1Done) {
+        // Already completed Day 1 — AI bisa jawab natural
+        const ai = await aiRespond(msg, "User sudah selesai Day 1, menunggu Day 2.")
+        if (ai) return new Response(ai)
+        return new Response(`Halo lagi! Day 1 sudah dikirim. Besok jam 7 pagi lanjut Day 2 ya 🌸`)
+      }
 
-    const props = page.properties || {}
-    const leadName = props['Lead Name']?.title?.[0]?.text?.content || ''
-    const day1Done = props['Day 1']?.checkbox === true
-    
-    if (day1Done) return new Response(`Halo lagi! Day 1 sudah dikirim. Besok jam 7 pagi lanjut Day 2 ya 🌸`)
-
-    const parts = leadName.split('||')
-    
-    if (parts.length === 1 && !leadName.includes('—')) {
-      const newName = `${phone} — ${msg}`
-      await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: newName } }] } } })
-      return new Response('Dari kota mana, Bunda? 🏙️')
-    }
-    
-    if (parts.length === 1) {
-      const updated = `${leadName} || city: ${msg}`
-      await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: updated } }] } } })
-      return new Response('Apa tujuan Bunda ikut challenge ini? 🎯')
-    }
-    
-    if (parts.length === 2) {
-      const updated = `${leadName} || goal: ${msg}`
-      await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: updated } }] } } })
-      return new Response('Darimana Bunda tahu GrowWithIka? 📱')
-    }
-    
-    if (parts.length === 3) {
-      const updated = `${leadName} || source: ${msg}`
-      await notionUpdate(page.id, {
-        properties: { 'Lead Name': { title: [{ text: { content: updated } }] }, 'Day 1': { checkbox: true }, 'Completion Rate': { number: 14.29 } }
-      })
-      return new Response(`🎉 Terima kasih! Data sudah lengkap.\n\n📚 Day 1: Bangun Mentalitas Bertumbuh\n✅ Tulis 3 hal yg disyukuri\n✅ Set 1 goal kecil\n✅ Baca refleksi mindset\n\nBesok jam 7 pagi lanjut Day 2! 🚀`)
+      const parts = leadName.split('||')
+      
+      // Sequential flow: collect name → city → goal → source
+      if (parts.length === 1 && !leadName.includes('—')) {
+        const newName = `${phone} — ${msg}`
+        await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: newName } }] } } })
+        return new Response('Dari kota mana, Bunda? 🏙️')
+      }
+      
+      if (parts.length === 1) {
+        const updated = `${leadName} || city: ${msg}`
+        await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: updated } }] } } })
+        return new Response('Apa tujuan Bunda ikut challenge ini? 🎯')
+      }
+      
+      if (parts.length === 2) {
+        const updated = `${leadName} || goal: ${msg}`
+        await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: updated } }] } } })
+        return new Response('Darimana Bunda tahu GrowWithIka? 📱')
+      }
+      
+      if (parts.length === 3) {
+        const updated = `${leadName} || source: ${msg}`
+        await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: updated } }] }, 'Day 1': { checkbox: true }, 'Completion Rate': { number: 14.29 } } })
+        return new Response(`🎉 Terima kasih! Data sudah lengkap.\n\n📚 Day 1: Bangun Mentalitas Bertumbuh\n✅ Tulis 3 hal yg disyukuri\n✅ Set 1 goal kecil\n✅ Baca refleksi mindset\n\nBesok jam 7 pagi lanjut Day 2! 🚀`)
+      }
     }
 
-    return new Response(welcome())
+    // AI fallback untuk pertanyaan umum
+    const aiText = await aiRespond(msg, page ? "User sudah terdaftar." : "User baru, belum kenal.")
+    if (aiText) return new Response(aiText)
+    
+    return new Response(`Halo Bunda! 👋 Selamat datang! Ketik YA untuk mulai 7-Hari Challenge gratis, atau TANYA untuk FAQ.`)
   } catch (e: any) {
     console.error('[WEBHOOK]', e.message)
     return new Response(null, { status: 204 })
