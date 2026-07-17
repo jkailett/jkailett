@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const WABLAS_TOKEN = process.env.WABLAS_TOKEN || ''
+const WABLAS_TOKEN = process.env.WABLAS_TOKEN || 'Vn2UG8k2UJI1AuC8ptPC3YTqCb1HKCzCJGdWfkiBdYE2Yovczhbscn6'
 const WABLAS_SECRET = process.env.WABLAS_SECRET || 'HcU2B9tK'
 const WABLAS_API = 'https://tegal.wablas.com/api'
 const NOTION_DB_ID = '39d95b59-1c49-81ac-b7d7-cff618972925'
