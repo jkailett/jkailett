@@ -39,9 +39,16 @@ async function aiRespond(msg: string, context: string): Promise<string | null> {
 - Jangan janjiin hasil tertentu
 
 🎯 RESPONS:
-"Mau daftar" → Arahkan ketik YA
-"Tertarik" → "Ketik YA untuk mulai 7 Hari Memulai Perubahan gratis, Bunda!"
+"Mau daftar" → Arahkan langsung, validasi tujuannya dulu
+"Tertarik" → Validasi antusiasme, lalu arahkan
 "Info lanjut" → "Ketik TANYA untuk info"
+"Saya ingin berubah" → Validasi! "Wah keren Bunda! Tujuan yang luar biasa"
+
+🎯 EMPATI & VALIDASI:
+- Kalau user jawab pertanyaan, validasi/jembati dulu sebelum tanya berikutnya
+- Contoh: user jawab "Pekalongan kak" → "Wah Pekalongan, kota batik ya! Pasti indah."
+- Contoh: user jawab "Saya ingin berubah dan punya penghasilan" → Validasi dulu, baru tanya sumber info
+- Jangan kayak robot isi formulir — beri komentar dulu, baru pertanyaan baru
 
 ⏰ USER STATE: ${context}
 
@@ -149,27 +156,27 @@ export async function POST(req: Request) {
 
       const parts = leadName.split('||')
       
-      // Data CRM: name → city → goal → source
+      // Data CRM: name → city → goal → source (dengan validasi emosi)
       if (parts.length === 1 && !leadName.includes('—')) {
-        // User baru isi nama
         const newName = `${phone} — ${msg}`
         await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: newName } }] } } })
-        return new Response('Dari kota mana, Bunda? 🏙️')
+        const nama = msg.split(' ')[0]
+        return new Response(`Senang berkenalan, ${nama}! 🌸 Nama yang cantik.\n\nBunda tinggal di kota mana?`)
       }
       if (parts.length === 1) {
         const upd = `${leadName} || city: ${msg}`
         await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: upd } }] } } })
-        return new Response('Apa tujuan Bunda ikut challenge ini? 🎯')
+        return new Response(`Wah, pasti kota yang indah! 🌸\n\nBoleh cerita, apa yang membuat Bunda tertarik ikut challenge ini? Tujuannya apa?`)
       }
       if (parts.length === 2) {
         const upd = `${leadName} || goal: ${msg}`
         await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: upd } }] } } })
-        return new Response('Darimana Bunda tahu Komunitas Tumbuh Bersama? 📱')
+        return new Response(`Wah, itu keren banget Bunda! 👏 Saya bisa rasain semangatnya dari sini.\n\nTujuan seperti itu sejalan banget dengan visi komunitas kita. Saya yakin Bunda bisa mencapai itu.\n\nBunda kenal Komunitas Tumbuh Bersama dari mana? IG, TikTok, atau dari teman?`) 
       }
       if (parts.length === 3) {
         const upd = `${leadName} || source: ${msg}`
         await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: upd } }] }, 'Day 1': { checkbox: true }, 'Completion Rate': { number: 14.29 } } })
-        return new Response(`🎉 Terima kasih! Data sudah lengkap.\n\n📚 Day 1: Mulai dari Dalam — bersama Ika Irawati\n✅ Tulis 2 hal yang disyukuri hari ini\n✅ Tulis 1 keterampilan baru yang ingin Bunda kuasai\n✅ Balas: *Saya Siap Bertumbuh*\n\nKerjakan dulu ya Bunda, besok kita lanjut Day 2! 🚀`)
+        return new Response(`🎉 Terima kasih Bunda! Sekarang Bunda resmi bergabung di 7 Hari Memulai Perubahan.\n\nLangkah pertama adalah yang terberat, dan Bunda sudah melakukannya. Saya bangga! 👏\n\n📚 *Day 1: Mulai dari Dalam* — bersama Ika Irawati\n✅ Tulis 2 hal yang disyukuri hari ini\n✅ Tulis 1 keterampilan baru yang ingin Bunda kuasai\n✅ Balas: *Saya Siap Bertumbuh*\n\nKerjakan dulu ya Bunda, santai aja. Besok kita lanjut Day 2! 🚀`)
       }
     }
 
