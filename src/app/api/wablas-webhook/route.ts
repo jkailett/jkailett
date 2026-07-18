@@ -187,19 +187,31 @@ export async function POST(req: Request) {
 
     // STOP
     if (['stop','berhenti','cancel','batal','keluar'].some(k => mLower.includes(k)))
-      return new Response('Kamu berhenti menerima broadcast. Ketik MULAI kapan saja untuk bergabung kembali.')
+      return new Response('Kamu berhenti menerima broadcast. Ketik MULAI kapan saja untuk bergabung kembali')
 
     // HELP
     if (['tanya','help','bantu','info','faq','apa itu','bagaimana'].some(k => mLower.includes(k)))
       return new Response(faqMsg())
 
-    // AI FIRST — untuk semua yg belum match
+    // AI FIRST — untuk semua yg belum match, dengan context lebih detail
     let chatHistory = ''
+    let userState = "User baru, belum kenal komunitas."
+    
     if (page) {
       const notes = page.properties?.['Notes']?.rich_text?.[0]?.text?.content || ''
       if (notes) chatHistory = `\n\nRiwayat chat:\n${notes}`
+      
+      const p = page.properties || {}
+      const leadName = p['Lead Name']?.title?.[0]?.text?.content || ''
+      const day1Done = p['Day 1']?.checkbox === true
+      
+      if (day1Done) userState = "User sudah selesai Day 1, menunggu Day 2. Boleh jawab pertanyaan seputar program."
+      else if (leadName.includes('||source:')) userState = "User baru isi data lengkap, siap mulai Day 1."
+      else if (leadName.includes('||')) userState = "User sedang isi data pendaftaran."
+      else userState = "User sudah daftar, tahap awal."
     }
-    const aiMsg = await aiRespond(msg, (page ? "User sudah terdaftar." : "User baru.") + chatHistory)
+
+    const aiMsg = await aiRespond(msg, `${userState}${chatHistory}`)
     if (aiMsg) {
       if (page) {
         const notes = page.properties?.['Notes']?.rich_text?.[0]?.text?.content || ''
