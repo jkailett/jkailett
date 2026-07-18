@@ -169,7 +169,7 @@ export async function POST(req: Request) {
       if (parts.length === 3) {
         const upd = `${leadName} || source: ${msg}`
         await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: upd } }] }, 'Day 1': { checkbox: true }, 'Completion Rate': { number: 14.29 } } })
-        return new Response(`🎉 Terima kasih! Data sudah lengkap.\n\n📚 Day 1: Mulai dari Dalam\n✅ Tulis 3 hal yang disyukuri\n✅ Set 1 goal kecil hari ini\n✅ Baca refleksi mindset\n\nKerjakan dulu ya Bunda, besok kita lanjut Day 2! 🚀`)
+        return new Response(`🎉 Terima kasih! Data sudah lengkap.\n\n📚 Day 1: Mulai dari Dalam — bersama Ika Irawati\n✅ Tulis 2 hal yang disyukuri hari ini\n✅ Tulis 1 keterampilan baru yang ingin Bunda kuasai\n✅ Balas: *Saya Siap Bertumbuh*\n\nKerjakan dulu ya Bunda, besok kita lanjut Day 2! 🚀`)
       }
     }
 
