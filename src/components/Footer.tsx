@@ -123,7 +123,7 @@ export default function Footer() {
                 <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
               </Link>
               <a
-                href="https://wa.me/6285312000796?text=Halo%20Admin%2C%20saya%20tertarik%20dengan%207%20Hari%20Memulai%20Perubahan"
+                href="https://api.whatsapp.com/send/?phone=6285312200796&text=Halo%20Admin%2C%20saya%20tertarik%20dengan%207%20Hari%20Memulai%20Perubahan"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-secondary w-full sm:w-auto text-center group"
