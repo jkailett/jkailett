@@ -22,7 +22,7 @@ export default function ChallengeForm() {
     let phone = data.phone.replace(/\D/g, '')
     if (phone.startsWith('0')) phone = '62' + phone.slice(1)
     if (!phone.startsWith('62')) phone = '62' + phone
-    const targetPhone = '6285312200796'
+    const targetPhone = '6285312000796'
     const message = 'Halo Admin, saya ' + data.name + ' mau ikut 7 Hari Memulai Perubahan'
     window.open('https://api.whatsapp.com/send/?phone=' + targetPhone + '&text=' + encodeURIComponent(message), '_blank')
     setStatus('success')

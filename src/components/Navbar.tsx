@@ -113,7 +113,7 @@ export default function Navbar() {
                   </Link>
 
                   <a
-                    href="https://api.whatsapp.com/send/?phone=6285312200796&text=Halo%20Admin%2C%20saya%20mau%20daftar%207%20Hari%20Memulai%20Perubahan"
+                    href="https://api.whatsapp.com/send/?phone=6285312000796&text=Halo%20Admin%2C%20saya%20mau%20daftar%207%20Hari%20Memulai%20Perubahan"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn-secondary w-full text-center"
