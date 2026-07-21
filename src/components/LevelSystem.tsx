@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Target, BookOpen, Users, TrendingUp, Brain, Compass, Sunrise, MessageSquare, Wallet, Crown, TrendingUp as TrendingUp2, Zap, Repeat } from 'lucide-react'
+import { Target, BookOpen, Users, TrendingUp, Brain, Compass, Sunrise, MessageSquare, Wallet, Crown, TrendingUp as TrendingUp2, Zap, Repeat, MessageCircle } from 'lucide-react'
 
 const levels = [
   {
@@ -19,7 +19,7 @@ const levels = [
     ],
     cta: 'Mulai Sekarang — Gratis',
     ctaVariant: 'primary' as const,
-    href: '#tantangan',
+    href: 'https://api.whatsapp.com/send/?phone=6285312000796&text=Halo%20Ika%2C%20saya%20mau%20mulai%207%20Hari%20Growth%20Challenge',
   },
   {
     badge: 'PREMIUM',
@@ -171,8 +171,10 @@ export default function LevelSystem() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.8 }}
                 >
-                  <a
+                  <Link
                     href={level.href}
+                    target={level.href.startsWith('http') ? '_blank' : undefined}
+                    rel={level.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                     className={`
                       inline-flex items-center justify-center w-full gap-2
                       ${level.ctaVariant === 'primary' ? 'btn-primary' : 
@@ -181,9 +183,10 @@ export default function LevelSystem() {
                     `}
                     aria-label={level.cta}
                   >
+                    <MessageCircle className="w-5 h-5" aria-hidden="true" />
                     {level.cta}
                     <span className="transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>
-                  </a>
+                  </Link>
                 </motion.div>
               </div>
             </motion.article>
