@@ -5,10 +5,10 @@ import { Users, Star, Calendar, Award, MessageCircle, Shield, TrendingUp } from 
 
 export default function Testimonials() {
   const stats = [
-    { icon: Users, label: 'Ibu Aktif', value: '1.240+', desc: 'Di seluruh Indonesia' },
-    { icon: Star, label: 'Rating Rata-rata', value: '4.9/5', desc: 'Dari survey kepuasan' },
-    { icon: Calendar, label: 'Pengalaman', value: '5+ Tahun', desc: 'Mentoring & Coaching' },
-    { icon: Award, label: 'Sertifikasi', value: 'Maxwell Certified', desc: 'Leadership Coach Resmi' },
+    { icon: Users, value: 'Terpercaya', label: 'Bantu wanita Indonesia', desc: 'lebih mandiri' },
+    { icon: Star, value: '4.9/5', label: 'Rating Rata-rata', desc: 'Dari survey kepuasan' },
+    { icon: Calendar, value: '5+ Tahun', label: 'Pengalaman', desc: 'Mentoring & Coaching' },
+    { icon: Award, value: 'Maxwell', label: 'Sertifikasi', desc: 'Leadership Coach Resmi' },
   ]
 
   const snapshots = [
@@ -45,7 +45,7 @@ export default function Testimonials() {
   const partners = [
     { name: 'Maxwell Leadership', desc: 'Official Certified Coach' },
     { name: 'Atomy Indonesia', desc: 'Master Distributor Partner' },
-    { name: 'Komunitas Tumbuh Bersama', desc: '1.240+ Member Aktif' },
+    { name: 'Komunitas Tumbuh Bersama', desc: 'Ribuan Wanita Aktif' },
   ]
 
   return (
@@ -76,7 +76,7 @@ export default function Testimonials() {
                 <div className="w-14 h-14 rounded-xl bg-terracotta/10 flex items-center justify-center text-terracotta mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                   <stat.icon className="w-7 h-7" aria-hidden="true" />
                 </div>
-                <p className="heading-2 text-terracotta font-bold mb-1">{stat.value}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-terracotta mb-1 leading-tight break-words">{stat.value}</p>
                 <p className="body-small font-medium text-soft-black/90">{stat.label}</p>
                 <p className="text-xs text-text-muted mt-1">{stat.desc}</p>
               </motion.article>
@@ -131,7 +131,7 @@ export default function Testimonials() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="heading-2 mb-4"
             >
-              Sudah Dipercaya 1.240+ Ibu di Seluruh Indonesia
+              Sudah Membantu Wanita Indonesia
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
