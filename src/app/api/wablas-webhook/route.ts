@@ -4,9 +4,6 @@ const WABLAS_SECRET = 'HcU2B9tK'
 const NOTION_DB_ID = '39d95b59-1c49-81ac-b7d7-cff618972925'
 const NOTION_VER = '2022-06-28'
 
-/** In-memory cache: phone → pageId — bridge eventual consistency gap */
-const _pageCache = new Map<string, { pageId: string; ts: number }>()
-
 function delay(ms: number) { return new Promise(r => setTimeout(r, ms)) }
 
 function welcome() { return "Halo Bunda! 👋 Selamat datang di 7 Hari Memulai Perubahan — GRATIS!\n\nIkuti 7 hari ini untuk:\n✨ Mindset leadership yg kuat\n✨ Kebiasaan positif baru\n✨ Langkah kecil menuju perubahan\n\nSiap mulai? 💪\n\nKetik: YA (daftar)\nKetik: TANYA (info)" }
@@ -18,8 +15,6 @@ async function aiRespond(msg: string, context: string): Promise<string | null> {
     const key = process.env.DEEPSEEK_API_KEY || ''
     if (!key || key.length < 10) return null
     
-    console.log('[AI] Calling DeepSeek with key length:', key.length)
-    
     const systemPrompt = `Kamu adalah Admin Komunitas Tumbuh Bersama — asisten Ika Irawati.
 
 IDENTITAS:
@@ -30,7 +25,6 @@ IDENTITAS:
 
 PANDUAN JAWAB:
 - Jawab PERTANYAAN user secara langsung dulu, baru arahkan ke program
-- Contoh: user tanya "caranya submit tugas?" → jawab dulu caranya, baru kalau relevan arahkan
 - JANGAN paksa redirect ke program kalau user cuma tanya sesuatu
 - Jawab dengan alami, kayak chat sama teman, bukan template marketing
 - Maks 200 karakter. Santai. Natural.
@@ -64,33 +58,32 @@ LARANGAN:
   } catch { return null }
 }
 
-async function notionQuery(phone: string) {
+/**
+ * Cari Notion page by phone number.
+ * Retry max 3x dengan jeda 2s — timeout total < 10s (Vercel Hobby limit).
+ */
+async function notionFindByPhone(phone: string): Promise<{ page: any; fromCache: boolean }> {
+  const nt = process.env.NOTION_TOKEN || ''
+  if (!nt) return { page: null, fromCache: false }
+  
+  for (let i = 0; i < 3; i++) {
+    try {
+      const resp = await fetch(`https://api.notion.com/v1/databases/${NOTION_DB_ID}/query`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${nt}`, 'Notion-Version': NOTION_VER, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filter: { property: 'Lead Name', title: { contains: phone } } })
+      })
+      const json = await resp.json()
+      if (json.results?.length > 0) return { page: json.results[0], fromCache: false }
+    } catch {}
+    if (i < 2) await delay(2000)
+  }
+  return { page: null, fromCache: false }
+}
+
+async function notionCreate(phone: string): Promise<string | null> {
   const nt = process.env.NOTION_TOKEN || ''
   if (!nt) return null
-  try {
-    const resp = await fetch(`https://api.notion.com/v1/databases/${NOTION_DB_ID}/query`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${nt}`, 'Notion-Version': NOTION_VER, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filter: { property: 'Lead Name', title: { contains: phone } } })
-    })
-    const json = await resp.json()
-    return json.results?.[0] || null
-  } catch(e) { return null }
-}
-
-/** Retry notionQuery max 6 kali dengan jeda — handle Notion eventual consistency */
-async function notionQueryWithRetry(phone: string, retries = 6): Promise<any> {
-  for (let i = 0; i < retries; i++) {
-    const result = await notionQuery(phone)
-    if (result) return result
-    if (i < retries - 1) await delay(1500)
-  }
-  return null
-}
-
-async function notionCreate(phone: string) {
-  const nt = process.env.NOTION_TOKEN || ''
-  if (!nt) return
   try {
     const resp = await fetch('https://api.notion.com/v1/pages', {
       method: 'POST',
@@ -105,10 +98,10 @@ async function notionCreate(phone: string) {
     })
     if (resp.ok) {
       const json = await resp.json()
-      const pageId = json.id
-      _pageCache.set(phone, { pageId, ts: Date.now() })
+      return json.id
     }
-  } catch(e) {}
+    return null
+  } catch { return null }
 }
 
 async function notionUpdate(pageId: string, body: any) {
@@ -123,6 +116,60 @@ async function notionUpdate(pageId: string, body: any) {
   } catch(e) {}
 }
 
+// ─── Sequential flow: 4 steps ──────────────────────────────────────────
+// Step 1: nama → Step 2: kota → Step 3: tujuan → Step 4: source → Day 1
+//
+// Lead Name format:
+//   "62899..."              → baruu, no name yet (Step 0)
+//   "62899... — Sisca"      → nama done (Step 1), need city
+//   "62899... — Sisca || city: Jakarta" → city done (Step 2), need goal
+//   "62899... — Sisca || city: Jakarta || goal: Income" → goal done (Step 3), need source
+//   "62899... — Sisca || city: Jakarta || goal: Income || source: IG" → complete (Step 4)
+
+type StepHandler = (msg: string, phone: string, leadName: string, pageId: string) => Promise<Response | null>
+
+const STEP_HANDLERS: StepHandler[] = [
+  // Step 0 → 1: NAMA
+  async (msg, phone, leadName, pageId) => {
+    const newName = `${phone} — ${msg}`
+    await notionUpdate(pageId, { properties: { 'Lead Name': { title: [{ text: { content: newName } }] } } })
+    const nama = msg.split(' ')[0]
+    return new Response(`Senang berkenalan, ${nama}! 🌸 Nama yang cantik.\n\nBunda tinggal di kota mana?`)
+  },
+  // Step 1 → 2: KOTA
+  async (msg, phone, leadName, pageId) => {
+    const upd = `${leadName} || city: ${msg}`
+    await notionUpdate(pageId, { properties: { 'Lead Name': { title: [{ text: { content: upd } }] } } })
+    return new Response(`Wah, pasti kota yang indah! 🌸\n\nBoleh cerita, apa yang membuat Bunda tertarik ikut challenge ini? Tujuannya apa?`)
+  },
+  // Step 2 → 3: TUJUAN
+  async (msg, phone, leadName, pageId) => {
+    const upd = `${leadName} || goal: ${msg}`
+    await notionUpdate(pageId, { properties: { 'Lead Name': { title: [{ text: { content: upd } }] } } })
+    return new Response(`Wah, itu keren banget Bunda! 👏 Saya bisa rasain semangatnya dari sini.\n\nTujuan seperti itu sejalan banget dengan visi komunitas kita. Saya yakin Bunda bisa mencapai itu.\n\nBunda kenal Komunitas Tumbuh Bersama dari mana? IG, TikTok, atau dari teman?`)
+  },
+  // Step 3 → 4: SOURCE
+  async (msg, phone, leadName, pageId) => {
+    const upd = `${leadName} || source: ${msg}`
+    await notionUpdate(pageId, { properties: { 'Lead Name': { title: [{ text: { content: upd } }] }, 'Day 1': { checkbox: true }, 'Completion Rate': { number: 14.29 } } })
+    return new Response(`🎉 Terima kasih Bunda! Sekarang Bunda resmi bergabung di 7 Hari Memulai Perubahan.\n\nLangkah pertama adalah yang terberat, dan Bunda sudah melakukannya. Saya bangga! 👏\n\n📚 *Day 1: Mulai dari Dalam* — bersama Ika Irawati\n✅ Tulis 2 hal yang disyukuri hari ini\n✅ Tulis 1 keterampilan baru yang ingin Bunda kuasai\n✅ Balas: *Saya Siap Bertumbuh*\n\nKerjakan dulu ya Bunda, santai aja. Besok kita lanjut Day 2! 🚀`)
+  },
+]
+
+function detectStep(leadName: string): number {
+  // "62899..." → 0
+  if (!leadName.includes('—')) return 0
+  const parts = leadName.split('||')
+  if (parts.length === 1) return 1  // name done
+  if (parts.length === 2) return 2  // city done
+  if (parts.length === 3) return 3  // goal done
+  return 4  // source done → complete
+}
+
+function isDay1Done(leadName: string): boolean {
+  return leadName.includes('||source:')
+}
+
 export async function POST(req: Request) {
   try {
     const rawText = await req.text()
@@ -135,125 +182,70 @@ export async function POST(req: Request) {
 
     const mLower = msg.toLowerCase().trim()
 
-    // SILENT — diam total, no delay
+    // SILENT — diam total
     const silentWords = ['ok','oke','okay','oh','ohh','owh','ya udah','sip','noted','baik','baik2','bae','hmm','hm','he eh','yoi']
     if (silentWords.some(k => mLower === k || mLower.startsWith(k)))
       return new Response(null, { status: 204 })
 
-    // Delay 8-15 detik — lebih responsif
-    await delay(8000 + Math.random() * 7000)
+    // STOP (harus sebelum delay — urgent)
+    if (['stop','berhenti','cancel','batal','keluar'].some(k => mLower.includes(k)))
+      return new Response('Kamu berhenti menerima broadcast. Ketik MULAI kapan saja untuk bergabung kembali')
 
-    // Cek Notion — cache dulu baru query
-    let page = null
-    const cached = _pageCache.get(phone)
-    if (cached && (Date.now() - cached.ts) < 120000) {
-      // Cache hit (2 menit) — langsung pake, gaperlu Notion query
-      const props = {}
-      page = { id: cached.pageId, properties: { 'Lead Name': { title: [{ text: { content: `${phone}` } }] }, 'Day 1': { checkbox: false } } }
-    } else {
-      page = await notionQueryWithRetry(phone, 5)
-    }
+    // Delay 4-8 detik — lebih cepat, aman dari timeout 10s
+    await delay(4000 + Math.random() * 4000)
 
-    // === USER EXISTING: sequential flow (data CRM) ===
+    // ─── Cek existing user via Notion ───
+    const { page } = await notionFindByPhone(phone)
+    
     if (page) {
-      const props = page.properties || {}
-      const leadName = props['Lead Name']?.title?.[0]?.text?.content || ''
-      const day1Done = props['Day 1']?.checkbox === true
+      const leadName = page.properties?.['Lead Name']?.title?.[0]?.text?.content || ''
       
-      if (day1Done) {
-        // Day 1 selesai → AI handle natural
+      // Sudah complete (||source:) → Day 1 mode
+      if (isDay1Done(leadName)) {
         const ai = await aiRespond(msg, "User sudah selesai Day 1, menunggu Day 2.")
         if (ai) return new Response(ai)
         return new Response(`Halo Bunda! Besok jam 7 pagi kita lanjut Day 2 ya! Semangat! 🌸`)
       }
 
-      const parts = leadName.split('||')
-      
-      // SEQ 1: NAMA — leadName masih phone aja (belum ada || dan belum ada —)
-      if (parts.length === 1 && !leadName.includes('—')) {
-        const newName = `${phone} — ${msg}`
-        await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: newName } }] } } })
-        const nama = msg.split(' ')[0]
-        return new Response(`Senang berkenalan, ${nama}! 🌸 Nama yang cantik.\n\nBunda tinggal di kota mana?`)
-      }
-      
-      // SEQ 2: KOTA — leadName = "phone — Nama" (1 part, ada —, belum ada ||)
-      if (parts.length === 1 && leadName.includes('—')) {
-        const upd = `${leadName} || city: ${msg}`
-        await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: upd } }] } } })
-        return new Response(`Wah, pasti kota yang indah! 🌸\n\nBoleh cerita, apa yang membuat Bunda tertarik ikut challenge ini? Tujuannya apa?`)
-      }
-      
-      // SEQ 3: TUJUAN — sudah ada 1 ||
-      if (parts.length === 2) {
-        const upd = `${leadName} || goal: ${msg}`
-        await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: upd } }] } } })
-        return new Response(`Wah, itu keren banget Bunda! 👏 Saya bisa rasain semangatnya dari sini.\n\nTujuan seperti itu sejalan banget dengan visi komunitas kita. Saya yakin Bunda bisa mencapai itu.\n\nBunda kenal Komunitas Tumbuh Bersama dari mana? IG, TikTok, atau dari teman?`)
-      }
-      
-      // SEQ 4: SOURCE — sudah 2 ||
-      if (parts.length === 3) {
-        const upd = `${leadName} || source: ${msg}`
-        await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: upd } }] }, 'Day 1': { checkbox: true }, 'Completion Rate': { number: 14.29 } } })
-        return new Response(`🎉 Terima kasih Bunda! Sekarang Bunda resmi bergabung di 7 Hari Memulai Perubahan.\n\nLangkah pertama adalah yang terberat, dan Bunda sudah melakukannya. Saya bangga! 👏\n\n📚 *Day 1: Mulai dari Dalam* — bersama Ika Irawati\n✅ Tulis 2 hal yang disyukuri hari ini\n✅ Tulis 1 keterampilan baru yang ingin Bunda kuasai\n✅ Balas: *Saya Siap Bertumbuh*\n\nKerjakan dulu ya Bunda, santai aja. Besok kita lanjut Day 2! 🚀`)
+      // Sequential flow
+      const step = detectStep(leadName)
+      if (step < 4) {
+        const handler = STEP_HANDLERS[step]
+        return await handler(msg, phone, leadName, page.id) ?? new Response(null, { status: 204 })
       }
     }
 
-    // === USER BARU: langsung data collection tanpa "ketik YA" ===
+    // ─── USER BARU ───
     const intentMauIkut = ['ya','iya','siap','mau','ikut','daftar','join','gabung','coba','tes','test',
       'tertarik','pingin','pengen','ingin','belajar','mulai','lanjut','saya mau','saya ingin','saya pengen',
       'mau dong','ayo','gas','yuk']
     
     if (intentMauIkut.some(k => mLower === k || mLower.startsWith(k) || mLower.includes(k))) {
-      await notionCreate(phone)
+      const pageId = await notionCreate(phone)
       return new Response('Senang sekali Bunda tertarik! 🌸\n\nSebelum mulai, saya mau kenalan dulu ya.\n\nSiapa nama lengkap Bunda?')
     }
 
-    // GREETINGS — welcome + langsung tanya nama
     if (['hai','halo','hello','hi','hey','selamat','pagi','siang','sore','malam',
         'assalamualaikum','asslm'].some(k => mLower.includes(k))) {
-      await notionCreate(phone)
+      const pageId = await notionCreate(phone)
       return new Response(`Halo Bunda! 👋 Selamat datang di Komunitas Tumbuh Bersama.\n\nKami punya program 7 Hari Memulai Perubahan — GRATIS. Dirancang khusus untuk ibu-ibu hebat seperti Bunda.\n\nSebelum mulai, saya mau kenalan dulu ya.\n\nSiapa nama lengkap Bunda? 🌸`)
     }
 
-    // STOP
-    if (['stop','berhenti','cancel','batal','keluar'].some(k => mLower.includes(k)))
-      return new Response('Kamu berhenti menerima broadcast. Ketik MULAI kapan saja untuk bergabung kembali')
-
-    // HELP
     if (['tanya','help','bantu','info','faq','apa itu','bagaimana'].some(k => mLower.includes(k)))
       return new Response(faqMsg())
 
-    // AI FIRST — untuk semua yg belum match, dengan context lebih detail
-    let chatHistory = ''
+    // AI FIRST
     let userState = "User baru, belum kenal komunitas."
-    
     if (page) {
-      const notes = page.properties?.['Notes']?.rich_text?.[0]?.text?.content || ''
-      if (notes) chatHistory = `\n\nRiwayat chat:\n${notes}`
-      
-      const p = page.properties || {}
-      const leadName = p['Lead Name']?.title?.[0]?.text?.content || ''
-      const day1Done = p['Day 1']?.checkbox === true
-      
-      if (day1Done) userState = "User sudah selesai Day 1, menunggu Day 2. Boleh jawab pertanyaan seputar program."
-      else if (leadName.includes('||source:')) userState = "User baru isi data lengkap, siap mulai Day 1."
+      const leadName = page.properties?.['Lead Name']?.title?.[0]?.text?.content || ''
+      if (isDay1Done(leadName)) userState = "User sudah selesai Day 1, menunggu Day 2."
       else if (leadName.includes('||')) userState = "User sedang isi data pendaftaran."
-      else userState = "User sudah daftar, tahap awal."
+      else if (leadName.includes('—')) userState = "User sudah daftar, tahap awal."
     }
 
-    const aiMsg = await aiRespond(msg, `${userState}${chatHistory}`)
-    if (aiMsg) {
-      if (page) {
-        const notes = page.properties?.['Notes']?.rich_text?.[0]?.text?.content || ''
-        const updated = (notes ? notes + '\n' : '') + `[Q: ${msg}] [A: ${aiMsg}]`
-        const trimmed = updated.length > 1900 ? updated.slice(-1900) : updated
-        notionUpdate(page.id, { properties: { 'Notes': { rich_text: [{ text: { content: trimmed } }] } } }).catch(() => {})
-      }
-      return new Response(aiMsg)
-    }
+    const aiMsg = await aiRespond(msg, userState)
+    if (aiMsg) return new Response(aiMsg)
 
-    // Final fallback
     return new Response(`Halo Bunda! Selamat datang di Komunitas Tumbuh Bersama. Ada yang bisa dibantu? 😊`)
   } catch (e: any) {
     console.error('[WEBHOOK]', e.message)
