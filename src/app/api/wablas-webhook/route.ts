@@ -75,7 +75,17 @@ async function notionQuery(phone: string) {
   } catch(e) { return null }
 }
 
-async function notionCreate(phone: string, name: string) {
+/** Retry notionQuery max 3 kali dengan jeda — handle Notion eventual consistency */
+async function notionQueryWithRetry(phone: string, retries = 3): Promise<any> {
+  for (let i = 0; i < retries; i++) {
+    const result = await notionQuery(phone)
+    if (result) return result
+    if (i < retries - 1) await delay(1000)
+  }
+  return null
+}
+
+async function notionCreate(phone: string) {
   const nt = process.env.NOTION_TOKEN || ''
   if (!nt) return
   try {
@@ -125,8 +135,8 @@ export async function POST(req: Request) {
     // Delay 8-15 detik — lebih responsif
     await delay(8000 + Math.random() * 7000)
 
-    // Cek Notion — user existing atau baru
-    const page = await notionQuery(phone)
+    // Cek Notion — pake retry biar konsisten
+    const page = await notionQueryWithRetry(phone, 3)
 
     // === USER EXISTING: sequential flow (data CRM) ===
     if (page) {
@@ -143,23 +153,29 @@ export async function POST(req: Request) {
 
       const parts = leadName.split('||')
       
-      // Data CRM: name → city → goal → source (dengan validasi emosi)
+      // SEQ 1: NAMA — leadName masih phone aja (belum ada || dan belum ada —)
       if (parts.length === 1 && !leadName.includes('—')) {
         const newName = `${phone} — ${msg}`
         await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: newName } }] } } })
         const nama = msg.split(' ')[0]
         return new Response(`Senang berkenalan, ${nama}! 🌸 Nama yang cantik.\n\nBunda tinggal di kota mana?`)
       }
-      if (parts.length === 1) {
+      
+      // SEQ 2: KOTA — leadName = "phone — Nama" (1 part, ada —, belum ada ||)
+      if (parts.length === 1 && leadName.includes('—')) {
         const upd = `${leadName} || city: ${msg}`
         await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: upd } }] } } })
         return new Response(`Wah, pasti kota yang indah! 🌸\n\nBoleh cerita, apa yang membuat Bunda tertarik ikut challenge ini? Tujuannya apa?`)
       }
+      
+      // SEQ 3: TUJUAN — sudah ada 1 ||
       if (parts.length === 2) {
         const upd = `${leadName} || goal: ${msg}`
         await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: upd } }] } } })
-        return new Response(`Wah, itu keren banget Bunda! 👏 Saya bisa rasain semangatnya dari sini.\n\nTujuan seperti itu sejalan banget dengan visi komunitas kita. Saya yakin Bunda bisa mencapai itu.\n\nBunda kenal Komunitas Tumbuh Bersama dari mana? IG, TikTok, atau dari teman?`) 
+        return new Response(`Wah, itu keren banget Bunda! 👏 Saya bisa rasain semangatnya dari sini.\n\nTujuan seperti itu sejalan banget dengan visi komunitas kita. Saya yakin Bunda bisa mencapai itu.\n\nBunda kenal Komunitas Tumbuh Bersama dari mana? IG, TikTok, atau dari teman?`)
       }
+      
+      // SEQ 4: SOURCE — sudah 2 ||
       if (parts.length === 3) {
         const upd = `${leadName} || source: ${msg}`
         await notionUpdate(page.id, { properties: { 'Lead Name': { title: [{ text: { content: upd } }] }, 'Day 1': { checkbox: true }, 'Completion Rate': { number: 14.29 } } })
@@ -168,20 +184,21 @@ export async function POST(req: Request) {
     }
 
     // === USER BARU: langsung data collection tanpa "ketik YA" ===
-    // Deteksi intent: greeting, mau ikut, tertarik, daftar, coba
     const intentMauIkut = ['ya','iya','siap','mau','ikut','daftar','join','gabung','coba','tes','test',
       'tertarik','pingin','pengen','ingin','belajar','mulai','lanjut','saya mau','saya ingin','saya pengen',
       'mau dong','ayo','gas','yuk']
     
     if (intentMauIkut.some(k => mLower === k || mLower.startsWith(k) || mLower.includes(k))) {
-      await notionCreate(phone, data?.pushName || '')
+      await notionCreate(phone)
+      await delay(2000) // Tunggu Notion index
       return new Response('Senang sekali Bunda tertarik! 🌸\n\nSebelum mulai, saya mau kenalan dulu ya.\n\nSiapa nama lengkap Bunda?')
     }
 
     // GREETINGS — welcome + langsung tanya nama
     if (['hai','halo','hello','hi','hey','selamat','pagi','siang','sore','malam',
         'assalamualaikum','asslm'].some(k => mLower.includes(k))) {
-      await notionCreate(phone, data?.pushName || '')
+      await notionCreate(phone)
+      await delay(2000) // Tunggu Notion index
       return new Response(`Halo Bunda! 👋 Selamat datang di Komunitas Tumbuh Bersama.\n\nKami punya program 7 Hari Memulai Perubahan — GRATIS. Dirancang khusus untuk ibu-ibu hebat seperti Bunda.\n\nSebelum mulai, saya mau kenalan dulu ya.\n\nSiapa nama lengkap Bunda? 🌸`)
     }
 
