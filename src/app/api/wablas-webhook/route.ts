@@ -4,6 +4,9 @@ const WABLAS_SECRET = 'HcU2B9tK'
 const NOTION_DB_ID = '39d95b59-1c49-81ac-b7d7-cff618972925'
 const NOTION_VER = '2022-06-28'
 
+/** In-memory cache: phone → pageId — bridge eventual consistency gap */
+const _pageCache = new Map<string, { pageId: string; ts: number }>()
+
 function delay(ms: number) { return new Promise(r => setTimeout(r, ms)) }
 
 function welcome() { return "Halo Bunda! 👋 Selamat datang di 7 Hari Memulai Perubahan — GRATIS!\n\nIkuti 7 hari ini untuk:\n✨ Mindset leadership yg kuat\n✨ Kebiasaan positif baru\n✨ Langkah kecil menuju perubahan\n\nSiap mulai? 💪\n\nKetik: YA (daftar)\nKetik: TANYA (info)" }
@@ -75,12 +78,12 @@ async function notionQuery(phone: string) {
   } catch(e) { return null }
 }
 
-/** Retry notionQuery max 3 kali dengan jeda — handle Notion eventual consistency */
-async function notionQueryWithRetry(phone: string, retries = 3): Promise<any> {
+/** Retry notionQuery max 6 kali dengan jeda — handle Notion eventual consistency */
+async function notionQueryWithRetry(phone: string, retries = 6): Promise<any> {
   for (let i = 0; i < retries; i++) {
     const result = await notionQuery(phone)
     if (result) return result
-    if (i < retries - 1) await delay(1000)
+    if (i < retries - 1) await delay(1500)
   }
   return null
 }
@@ -89,7 +92,7 @@ async function notionCreate(phone: string) {
   const nt = process.env.NOTION_TOKEN || ''
   if (!nt) return
   try {
-    await fetch('https://api.notion.com/v1/pages', {
+    const resp = await fetch('https://api.notion.com/v1/pages', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${nt}`, 'Notion-Version': NOTION_VER, 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -100,6 +103,11 @@ async function notionCreate(phone: string) {
         }
       })
     })
+    if (resp.ok) {
+      const json = await resp.json()
+      const pageId = json.id
+      _pageCache.set(phone, { pageId, ts: Date.now() })
+    }
   } catch(e) {}
 }
 
@@ -135,8 +143,16 @@ export async function POST(req: Request) {
     // Delay 8-15 detik — lebih responsif
     await delay(8000 + Math.random() * 7000)
 
-    // Cek Notion — pake retry biar konsisten
-    const page = await notionQueryWithRetry(phone, 3)
+    // Cek Notion — cache dulu baru query
+    let page = null
+    const cached = _pageCache.get(phone)
+    if (cached && (Date.now() - cached.ts) < 120000) {
+      // Cache hit (2 menit) — langsung pake, gaperlu Notion query
+      const props = {}
+      page = { id: cached.pageId, properties: { 'Lead Name': { title: [{ text: { content: `${phone}` } }] }, 'Day 1': { checkbox: false } } }
+    } else {
+      page = await notionQueryWithRetry(phone, 5)
+    }
 
     // === USER EXISTING: sequential flow (data CRM) ===
     if (page) {
@@ -190,7 +206,6 @@ export async function POST(req: Request) {
     
     if (intentMauIkut.some(k => mLower === k || mLower.startsWith(k) || mLower.includes(k))) {
       await notionCreate(phone)
-      await delay(2000) // Tunggu Notion index
       return new Response('Senang sekali Bunda tertarik! 🌸\n\nSebelum mulai, saya mau kenalan dulu ya.\n\nSiapa nama lengkap Bunda?')
     }
 
@@ -198,7 +213,6 @@ export async function POST(req: Request) {
     if (['hai','halo','hello','hi','hey','selamat','pagi','siang','sore','malam',
         'assalamualaikum','asslm'].some(k => mLower.includes(k))) {
       await notionCreate(phone)
-      await delay(2000) // Tunggu Notion index
       return new Response(`Halo Bunda! 👋 Selamat datang di Komunitas Tumbuh Bersama.\n\nKami punya program 7 Hari Memulai Perubahan — GRATIS. Dirancang khusus untuk ibu-ibu hebat seperti Bunda.\n\nSebelum mulai, saya mau kenalan dulu ya.\n\nSiapa nama lengkap Bunda? 🌸`)
     }
 
