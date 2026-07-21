@@ -80,7 +80,7 @@ export default function Hero() {
               href="https://api.whatsapp.com/send/?phone=6285312000796&text=Halo%20Ika%2C%20saya%20mau%20ngobrol%20tentang%20program%20bertumbuh"
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-secondary w-full sm:w-auto text-center"
+              className="btn-ghost w-full sm:w-auto text-center group"
               aria-label="Ngobrol dengan Ika via WhatsApp"
             >
               <MessageCircle className="w-5 h-5 inline-block mr-2" aria-hidden="true" />

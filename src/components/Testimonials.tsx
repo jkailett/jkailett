@@ -13,28 +13,28 @@ export default function Testimonials() {
 
   const snapshots = [
     { 
-      quote: '"Sebelum join, saya takut MLM = ngejar orang. Ternyata Level 1-2 cuma growth. Baru Level 3 Atomy kalau mau. Sekarang punya team 15 orang, penghasilan sampingan 3-5jt/bln — tanpa meninggalkan anak."',
+      quote: '"Sebelum join, saya takut MLM = ngejar orang. Ternyata Level 1-2 cuma growth. Baru Level 3 Atomy kalau mau. Sekarang punya <strong>penghasilan sampingan 3-5jt/bln</strong> — tanpa meninggalkan anak."',
       name: 'Bu Siti',
       location: 'Surabaya',
       level: 'Level 3',
       result: 'Team 15, +3-5jt/bln'
     },
     { 
-      quote: '"Gaptek banget saya, HP cuma buat WA & TikTok. Ternyata sistemnya lewat WA aja — nggak perlu app tambahan. Banyak member 40+ sukses. Sekarang confident banget online."',
+      quote: '"Gaptek banget saya, HP cuma buat WA & TikTok. Ternyata sistemnya lewat WA aja — nggak perlu app tambahan. Banyak member 40+ sukses. Sekarang <strong>confident banget online</strong>."',
       name: 'Bu Dewi',
       location: 'Bandung',
       level: 'Level 2',
       result: 'Lead gen 15/bln, confidence naik 80%'
     },
     { 
-      quote: '"Yang beda: Ika nggak cuma kasih materi, tapi nemenin sampe bisa. Selesai 7 hari, lanjut Level 2. Rasa aman banget ada mentor yang ngerjain bareng, bukan guru-murid tapi peer growth."',
+      quote: '"Yang beda: Ika nggak cuma kasih materi, tapi <strong>nemenin sampe bisa</strong>. Selesai 7 hari, lanjut Level 2. Rasa aman banget ada mentor yang ngerjain bareng, bukan guru-murid tapi peer growth."',
       name: 'Bu Rina',
       location: 'Medan',
       level: 'Level 1',
       result: 'Selesai 7 hari, lanjut Level 2'
     },
     { 
-      quote: '"Team 40+ dalam 18 bulan. Passive income mulai. Produk konsumsi harian — ibu beli rutin. Ini bisnis yang adil: produk real, sistem fair, mentor yang nemenin."',
+      quote: '"Team 40+ dalam 18 bulan. <strong>Passive income mulai.</strong> Produk konsumsi harian — ibu beli rutin. Ini bisnis yang adil: produk real, sistem fair, mentor yang nemenin."',
       name: 'Bu Maya',
       location: 'Surabaya',
       level: 'Level 3',
@@ -169,9 +169,7 @@ export default function Testimonials() {
                     <p className="text-xs text-text-muted">{snapshot.location} · Indonesia</p>
                   </div>
                 </div>
-                <p className="text-sm text-soft-black/80 italic mb-4 leading-relaxed">
-                  {snapshot.quote}
-                </p>
+                <p className="text-sm text-soft-black/80 italic mb-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: snapshot.quote }}></p>
                 <div className="flex items-center justify-between pt-4 border-t border-warm-border">
                   <span className="badge badge-sage text-xs">{snapshot.level}</span>
                   <span className="text-xs font-medium text-terracotta">{snapshot.result}</span>
