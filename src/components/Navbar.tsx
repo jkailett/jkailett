@@ -38,9 +38,9 @@ export default function Navbar() {
           <Link
             href="/"
             className="font-heading text-2xl sm:text-3xl font-medium text-sage-green-dark hover:opacity-80 transition-opacity"
-            aria-label="Komunitas%20Tumbuh%20Bersama - Home"
+            aria-label="Komunitas Tumbuh Bersama - Home"
           >
-            Komunitas%20Tumbuh%20Bersama
+            Komunitas Tumbuh Bersama
           </Link>
 
           {/* Desktop Nav */}
@@ -49,7 +49,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="body-base text-soft-black/70 hover:text-sage-green transition-colors font-medium"
+                className="body-base text-soft-black/90 hover:text-sage-green transition-colors font-medium"
               >
                 {link.label}
               </Link>

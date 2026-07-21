@@ -66,7 +66,7 @@ export default function FAQ() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="body-lg text-soft-black/70"
+            className="body-lg text-soft-black/90"
           >
             Jawaban untuk hal yang paling sering ditanyakan
           </motion.p>
@@ -125,7 +125,7 @@ export default function FAQ() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: 0.1 }}
-                      className="px-6 pb-6 body-base text-soft-black/70 leading-relaxed"
+                      className="px-6 pb-6 body-base text-soft-black/90 leading-relaxed"
                     >
                       {faq.answer}
                     </motion.p>

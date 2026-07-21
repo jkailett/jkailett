@@ -23,21 +23,21 @@ const faqs = [
             <span className="w-10 h-10 rounded-xl bg-terracotta/10 flex items-center justify-center text-terracotta font-bold">1</span>
             <div>
               <p className="font-medium">Level 1 (Foundation): <span className="text-terracotta font-bold">GRATIS</span></p>
-              <p className="text-sm text-soft-black/70">7 hari challenge via WA + PDF Toolkit</p>
+              <p className="text-sm text-soft-black/90">7 hari challenge via WA + PDF Toolkit</p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 bg-white/50 rounded-xl">
             <span className="w-10 h-10 rounded-xl bg-sage-green/10 flex items-center justify-center text-sage-green font-bold">2</span>
             <div>
               <p className="font-medium">Level 2 (Mastery): <span className="text-sage-green font-bold">Rp 499rb/bln</span></p>
-              <p className="text-sm text-soft-black/70">Coaching Maxwell, akses komunitas, template konten</p>
+              <p className="text-sm text-soft-black/90">Coaching Maxwell, akses komunitas, template konten</p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 bg-white/50 rounded-xl">
             <span className="w-10 h-10 rounded-xl bg-muted-clay/10 flex items-center justify-center text-muted-clay font-bold">3</span>
             <div>
               <p className="font-medium">Level 3 (Business): <span className="text-muted-clay font-bold">Sesuai paket Atomy</span></p>
-              <p className="text-sm text-soft-black/70">Mulai konsumsi sendiri ~Rp 300rb/bln. Tidak ada paket wajib beli grosir.</p>
+              <p className="text-sm text-soft-black/90">Mulai konsumsi sendiri ~Rp 300rb/bln. Tidak ada paket wajib beli grosir.</p>
             </div>
           </div>
         </div>
@@ -63,10 +63,10 @@ const faqs = [
           <Clock className="w-5 h-5 text-terracotta" aria-hidden="true" />
           <div>
             <p className="font-medium">15–30 menit/hari</p>
-            <p className="text-sm text-soft-black/70">Konten dikirim via WA — baca kapan nyaman</p>
+            <p className="text-sm text-soft-black/90">Konten dikirim via WA — baca kapan nyaman</p>
           </div>
         </div>
-        <p className="mt-4 text-sm text-soft-black/70">Coaching mingguan opsional (Zoom 60 menit). Desain untuk ibu sibuk.</p>
+        <p className="mt-4 text-sm text-soft-black/90">Coaching mingguan opsional (Zoom 60 menit). Desain untuk ibu sibuk.</p>
       </>
     ),
   },
@@ -78,10 +78,10 @@ const faqs = [
           <Smartphone className="w-5 h-5 text-terracotta" aria-hidden="true" />
           <div>
             <p className="font-medium">Bisa. Semua via WhatsApp.</p>
-            <p className="text-sm text-soft-black/70">Tidak perlu app tambahan. Tim support bantu setup awal.</p>
+            <p className="text-sm text-soft-black/90">Tidak perlu app tambahan. Tim support bantu setup awal.</p>
           </div>
         </div>
-        <p className="mt-4 text-sm text-soft-black/70">Banyak member 40+ th sukses. Teknologi cuma alat, bukan halangan.</p>
+        <p className="mt-4 text-sm text-soft-black/90">Banyak member 40+ th sukses. Teknologi cuma alat, bukan halangan.</p>
       </>
     ),
   },
@@ -95,21 +95,21 @@ const faqs = [
               <BookOpen className="w-6 h-6 text-terracotta" aria-hidden="true" />
             </div>
             <h4 className="font-medium mb-1">Maxwell Certified</h4>
-            <p className="text-sm text-soft-black/70">Metodologi terstruktur, bukan motivational talk biasa</p>
+            <p className="text-sm text-soft-black/90">Metodologi terstruktur, bukan motivational talk biasa</p>
           </div>
           <div className="p-4 bg-white/50 rounded-xl border border-warm-border text-center">
             <div className="w-12 h-12 rounded-xl bg-sage-green/10 flex items-center justify-center mx-auto mb-3">
               <Target className="w-6 h-6 text-sage-green" aria-hidden="true" />
             </div>
             <h4 className="font-medium mb-1">Atomy Ecosystem</h4>
-            <p className="text-sm text-soft-black/70">Produk konsumsi real + compensation plan fair</p>
+            <p className="text-sm text-soft-black/90">Produk konsumsi real + compensation plan fair</p>
           </div>
           <div className="p-4 bg-white/50 rounded-xl border border-warm-border text-center">
             <div className="w-12 h-12 rounded-xl bg-muted-clay/10 flex items-center justify-center mx-auto mb-3">
               <Users className="w-6 h-6 text-muted-clay" aria-hidden="true" />
             </div>
             <h4 className="font-medium mb-1">Komunitas Ibu</h4>
-            <p className="text-sm text-soft-black/70">Peer support, bukan guru-murid. Saling nemenin tumbuh</p>
+            <p className="text-sm text-soft-black/90">Peer support, bukan guru-murid. Saling nemenin tumbuh</p>
           </div>
         </div>
       </>
@@ -150,24 +150,24 @@ const faqs = [
               <Award className="w-6 h-6 text-terracotta" aria-hidden="true" />
             </div>
             <h4 className="font-medium mb-1">Maxwell Leadership Certified Coach</h4>
-            <p className="text-sm text-soft-black/70">Sertifikasi resmi John Maxwell</p>
+            <p className="text-sm text-soft-black/90">Sertifikasi resmi John Maxwell</p>
           </div>
           <div className="p-4 bg-white/50 rounded-xl border border-warm-border text-center">
             <div className="w-12 h-12 rounded-xl bg-sage-green/10 flex items-center justify-center mx-auto mb-3">
               <Target className="w-6 h-6 text-sage-green" aria-hidden="true" />
             </div>
             <h4 className="font-medium mb-1">Atomy Master Distributor</h4>
-            <p className="text-sm text-soft-black/70">Leader resmi Atomy Indonesia</p>
+            <p className="text-sm text-soft-black/90">Leader resmi Atomy Indonesia</p>
           </div>
           <div className="p-4 bg-white/50 rounded-xl border border-warm-border text-center">
             <div className="w-12 h-12 rounded-xl bg-muted-clay/10 flex items-center justify-center mx-auto mb-3">
               <Users className="w-6 h-6 text-muted-clay" aria-hidden="true" />
             </div>
             <h4 className="font-medium mb-1">Founder Komunitas Tumbuh Bersama</h4>
-            <p className="text-sm text-soft-black/70">1.240+ member aktif di Indonesia</p>
+            <p className="text-sm text-soft-black/90">1.240+ member aktif di Indonesia</p>
           </div>
         </div>
-        <p className="mt-4 text-sm text-soft-black/70">5+ tahun mentoring ibu jadi leader mandiri. Misi: bikin ibu Indonesia percaya diri, sehat, mandiri finansial.</p>
+        <p className="mt-4 text-sm text-soft-black/90">5+ tahun mentoring ibu jadi leader mandiri. Misi: bikin ibu Indonesia percaya diri, sehat, mandiri finansial.</p>
       </>
     ),
   },
@@ -204,7 +204,7 @@ export default function FAQSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="body-lg text-soft-black/70"
+            className="body-lg text-soft-black/90"
           >
             Kami percaya keputusan terbaik lahir dari informasi lengkap. Tidak ada rahasia, tidak ada tekanan. Hanya fakta.
           </motion.p>
@@ -235,7 +235,7 @@ export default function FAQSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="body-base text-soft-black/70 mb-6 max-w-lg mx-auto"
+            className="body-base text-soft-black/90 mb-6 max-w-lg mx-auto"
           >
             Masih punya pertanyaan? Langsung chat ke WA kami — tim kami jawab langsung, no bot, no pressure.
           </motion.p>

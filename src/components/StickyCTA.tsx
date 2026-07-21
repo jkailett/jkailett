@@ -4,10 +4,10 @@ import Link from 'next/link'
 
 export default function StickyCTA() {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 sm:pb-6 md:hidden">
+    <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 sm:pb-6 md:pb-8">
       <div className="flex items-center gap-3 max-w-xl mx-auto">
         <a
-          href="#tantangan"
+          href="#challenge-form"
           className="flex-1 btn-primary py-3 text-center group"
           aria-label="Gabung 7 Hari Growth Challenge gratis via WhatsApp"
         >

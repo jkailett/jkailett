@@ -24,9 +24,9 @@ export default function Hero() {
             transition={{ duration: 0.6, ease: 'easeOut' }}
             className="mb-10"
           >
-            <Link href="/" className="inline-block" aria-label="Komunitas%20Tumbuh%20Bersama - Home">
+            <Link href="/" className="inline-block" aria-label="Grow With Ika - Home">
               <span className="font-heading text-3xl sm:text-4xl font-medium text-sage-green-dark tracking-tight">
-                Komunitas%20Tumbuh%20Bersama
+                Grow With Ika
               </span>
             </Link>
           </motion.div>
@@ -38,7 +38,7 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
             className="heading-1 text-balance mb-6"
           >
-            Dari Ibu Rumah Tangga jadi Leader Mandiri — Tanpa Tekanan Jualan
+            Bangun Masa Depan yang Lebih Baik.
           </motion.h1>
 
           {/* Subheadline */}
@@ -48,7 +48,7 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
             className="body-lg text-soft-black/90 max-w-3xl mx-auto mb-10 text-balance"
           >
-            Sistem 3 Level: Growth → Leadership → Business. Mulai dari 7 Hari Gratis via WhatsApp, zero pressure. Atomy opsional di Level 3.
+            Saya membantu ibu dan keluarga bertumbuh dalam kepemimpinan, hidup lebih sehat, dan membangun kesejahteraan melalui komunitas, Maxwell Leadership, dan bisnis Atomy yang berorientasi jangka panjang.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -56,20 +56,20 @@ export default function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 w-full sm:w-auto"
           >
             <Link
-              href="#challenge-form"
-              className="btn-primary group"
-              aria-label="Gabung 7 Hari Growth Challenge gratis via WhatsApp"
+              href="#tantangan"
+              className="btn-primary group w-full sm:w-auto text-center"
+              aria-label="Gabung 7 Hari bertumbuh gratis via WhatsApp"
             >
-              <MessageCircle className="w-5 h-5" aria-hidden="true" />
-              <span>Gabung 7 Hari Growth Challenge</span>
+              <MessageCircle className="w-5 h-5 inline-block mr-2" aria-hidden="true" />
+              <span>Gabung 7 Hari bertumbuh</span>
               <motion.div
                 initial={{ x: -4 }}
                 whileHover={{ x: 4 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                className="flex items-center"
+                className="inline-flex items-center ml-2"
                 aria-hidden="true"
               >
                 →
@@ -77,12 +77,14 @@ export default function Hero() {
             </Link>
 
             <Link
-              href="#kenalan-dengan-ika"
-              className="btn-secondary"
-              aria-label="Kenalan dengan Ika Irawati via WhatsApp"
+              href="https://api.whatsapp.com/send/?phone=6285312000796&text=Halo%20Ika%2C%20saya%20mau%20ngobrol%20tentang%20program%20bertumbuh"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-secondary w-full sm:w-auto text-center"
+              aria-label="Ngobrol dengan Ika via WhatsApp"
             >
-              <MessageCircle className="w-5 h-5" aria-hidden="true" />
-              Kenalan dengan Ika
+              <MessageCircle className="w-5 h-5 inline-block mr-2" aria-hidden="true" />
+              Ngobrol dengan Ika
             </Link>
           </motion.div>
 
@@ -105,7 +107,7 @@ export default function Hero() {
             </span>
             <span className="badge badge-sage" role="listitem">
               <CheckCircle2 className="w-3 h-3 mr-1.5" aria-hidden="true" />
-              Founder Komunitas%20Tumbuh%20Bersama
+              Komunitas Tumbuh Bersama
             </span>
             <span className="badge badge-terracotta" role="listitem">
               Growth First, Business Later
@@ -130,7 +132,6 @@ export default function Hero() {
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
               />
-              {/* Gradient overlay on image */}
               <div className="absolute inset-0 bg-gradient-to-t from-warm-sand/60 via-transparent to-sage-green/20" aria-hidden="true" />
             </div>
           </div>

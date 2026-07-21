@@ -76,7 +76,9 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
-        {children}
+        <div id="main-content-wrapper" className="min-h-screen pb-[calc(100px+env(safe-area-inset-bottom))]">
+          {children}
+        </div>
       </body>
     </html>
   )

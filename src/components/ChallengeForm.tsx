@@ -35,7 +35,7 @@ export default function ChallengeForm() {
         React.createElement(CheckCircle2, { className: 'w-12 h-12 text-sage-green' })
       ),
       React.createElement('h3', { className: 'text-2xl font-bold font-serif text-sage-green mb-3' }, 'Terima Kasih!'),
-      React.createElement('p', { className: 'text-soft-black/70 mb-8 max-w-xs mx-auto' }, 'Link grup Tantangan 7 Hari sudah terbuka di WhatsApp. Cek WA kamu dan mulai hari ini!'),
+      React.createElement('p', { className: 'text-soft-black/90 mb-8 max-w-xs mx-auto' }, 'Link grup Tantangan 7 Hari sudah terbuka di WhatsApp. Cek WA kamu dan mulai hari ini!'),
       React.createElement('button', { onClick: () => setStatus('idle'), className: 'inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-sage-green text-sage-green hover:bg-sage-green/5' }, 'Daftar Lagi')
     )
   }

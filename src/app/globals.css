@@ -54,27 +54,27 @@
   }
 
   .heading-1 {
-    @apply font-heading text-sage-green-dark text-4xl sm:text-5xl lg:text-6xl font-medium leading-tight tracking-tight;
+    @apply font-heading text-soft-black text-4xl sm:text-5xl lg:text-6xl font-medium leading-tight tracking-tight;
   }
 
   .heading-2 {
-    @apply font-heading text-sage-green-dark text-3xl sm:text-4xl lg:text-5xl font-medium leading-tight;
+    @apply font-heading text-soft-black text-3xl sm:text-4xl lg:text-5xl font-medium leading-tight;
   }
 
   .heading-3 {
-    @apply font-heading text-sage-green-dark text-2xl sm:text-3xl font-medium leading-snug;
+    @apply font-heading text-soft-black text-2xl sm:text-3xl font-medium leading-snug;
   }
 
   .body-lg {
-    @apply text-lg sm:text-xl text-soft-black/90 leading-relaxed;
+    @apply text-lg sm:text-xl text-soft-black leading-relaxed;
   }
 
   .body-base {
-    @apply text-base sm:text-lg text-soft-black/90 leading-relaxed;
+    @apply text-base sm:text-lg text-soft-black leading-relaxed;
   }
 
   .body-small {
-    @apply text-sm sm:text-base text-text-secondary leading-relaxed;
+    @apply text-sm sm:text-base text-soft-black leading-relaxed;
   }
 
   .btn-primary {
@@ -115,7 +115,7 @@
   }
 
   .badge-sage {
-    @apply border border-sage-green text-sage-green-dark bg-transparent;
+    @apply border border-sage-green text-sage-green-dark bg-sage-green/10;
   }
 
   .badge-clay {
@@ -124,6 +124,12 @@
 
   .section-label {
     @apply text-xs sm:text-sm font-medium text-terracotta-dark uppercase tracking-widest mb-4;
+  }
+}
+
+@layer components {
+  .section-divider {
+    @apply border-t border-warm-border/60;
   }
 }
 

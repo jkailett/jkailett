@@ -59,7 +59,7 @@ export default function LevelSystem() {
   return (
     <section
       id="sistem"
-      className="section-padding bg-soft-khaki"
+      className="section-padding bg-warm-sand"
       aria-labelledby="sistem-heading"
     >
       <div className="container-custom">
@@ -88,7 +88,7 @@ export default function LevelSystem() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="body-lg text-soft-black/70"
+            className="body-lg text-soft-black/90"
           >
             Sistem sederhana yang dirancang mengantarkan Bunda dari nol ke mandiri finansial — tanpa tekanan jualan keras.
           </motion.p>
@@ -140,7 +140,7 @@ export default function LevelSystem() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.3 }}
-                  className="body-base text-soft-black/70 mb-8"
+                  className="body-base text-soft-black/90 mb-8"
                 >
                   {level.description}
                 </motion.p>

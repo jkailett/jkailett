@@ -12,7 +12,7 @@ import Script from 'next/script'
 
 export const metadata: Metadata = {
   title: 'GrowWithIka — Growth First, Business Later | Komunitas Tumbuh Bersama',
-  description: 'Ika Irawati membantu ibu & keluarga bertumbuh dalam kepemimpinan, hidup lebih sehat, dan membangun kesejahteraan melalui komunitas, Maxwell Leadership, dan bisnis Atomy berorientasi jangka panjang.',
+  description: 'Ika Irawati membantu ibu & keluarga bertumbuh dalam kepemimpinan, hidup lebih sehat, dan membangun kesejahteraan melalui komunitas, Maxwell Leadership, dan bisnis Atomy berorientasi jangka panjang. Mulai 7 Hari Gratis.',
 }
 
 export default function Home() {

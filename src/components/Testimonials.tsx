@@ -51,7 +51,7 @@ export default function Testimonials() {
   return (
     <section
       id="testimoni"
-      className="section-padding bg-soft-khaki"
+      className="section-padding bg-warm-sand"
       aria-labelledby="testimoni-heading"
     >
       <div className="container-custom">
@@ -138,7 +138,7 @@ export default function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="body-lg text-soft-black/70 max-w-2xl mx-auto"
+              className="body-lg text-soft-black/90 max-w-2xl mx-auto"
             >
               Cerita nyata dari member komunitas — tidak difabrikasi, tidak dibayar. Hanya ibu nyata yang bertumbuh.
             </motion.p>
@@ -223,7 +223,7 @@ export default function Testimonials() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="body-base text-soft-black/70 mb-6 max-w-lg mx-auto"
+            className="body-base text-soft-black/90 mb-6 max-w-lg mx-auto"
           >
             Jadilah Pioneer Member. Cerita Bunda mungkin akan menjadi inspirasi ribuan ibu Indonesia lainnya.
           </motion.p>

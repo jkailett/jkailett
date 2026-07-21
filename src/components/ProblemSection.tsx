@@ -1,28 +1,23 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Target, Shield, Clock, Smartphone } from 'lucide-react'
+import { MessageCircle } from 'lucide-react'
 
 const painPoints = [
   {
-    icon: Target,
-    title: 'Bingung Mulai',
-    desc: 'Terlalu banyak info di internet. Bingung mana yang benar-benar efektif untuk ibu rumah tangga.',
+    text: 'Ingin berkembang tetapi tidak tahu mulai dari mana.',
   },
   {
-    icon: Shield,
-    title: 'Takut Jualan',
-    desc: 'Takut dianggap spam ke teman. Enggan "semangat-semangat" di grup keluarga dan teman-teman lama.',
+    text: 'Ingin punya penghasilan tambahan, tetapi tidak nyaman menjual atau memaksa orang.',
   },
   {
-    icon: Clock,
-    title: 'Ketinggalan Zaman',
-    desc: 'Ibu muda sudah sukses jalan online. Kita masih di tempat, bingung mulai dari mana.',
+    text: 'Ingin hidup lebih sehat, tetapi sulit konsisten.',
   },
   {
-    icon: Smartphone,
-    title: 'Gaptek',
-    desc: 'HP cuma buat WA & TikTok doang. Gimana mau belajar dan berkembang secara online?',
+    text: 'Ingin menjadi ibu yang lebih percaya diri dan mampu memimpin keluarga.',
+  },
+  {
+    text: 'Merasa jalan sendirian dan itu melelahkan.',
   },
 ]
 
@@ -30,7 +25,7 @@ export default function ProblemSection() {
   return (
     <section
       id="masalah"
-      className="section-padding bg-warm-sand"
+      className="section-padding bg-soft-khaki"
       aria-labelledby="problem-heading"
     >
       <div className="container-custom">
@@ -41,7 +36,7 @@ export default function ProblemSection() {
           transition={{ duration: 0.8, ease: 'easeOut' }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <span className="section-label">PERMASALAHAN</span>
+          <span className="section-label">MUNGKIN SAAT INI KAMU SEDANG MERASAKAN</span>
 
           <motion.h2
             id="problem-heading"
@@ -51,18 +46,8 @@ export default function ProblemSection() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="heading-2 mb-4"
           >
-            Pernah Merasa Begini, Bunda?
+            Pernah Merasa Seperti Ini, Bunda?
           </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="body-lg text-soft-black/70"
-          >
-            Banyak ibu ingin hidup lebih sehat, lebih percaya diri, dan memiliki masa depan finansial yang lebih baik, tetapi sering bingung harus memulai dari mana.
-          </motion.p>
         </motion.div>
 
         <motion.div
@@ -70,66 +55,43 @@ export default function ProblemSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
+          className="max-w-2xl mx-auto space-y-4"
         >
           {painPoints.map((item, index) => (
-            <motion.article
-              key={item.title}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.8, delay: 0.2 + index * 0.1, ease: 'easeOut' }}
-              className="group p-6 lg:p-8 bg-white rounded-2xl border border-warm-border shadow-warm hover:shadow-warm-lg transition-all duration-300"
+              transition={{ duration: 0.6, delay: 0.2 + index * 0.1, ease: 'easeOut' }}
+              className="group flex items-start gap-4 p-5 bg-white rounded-2xl border border-warm-border shadow-warm hover:shadow-warm-lg transition-all duration-300"
             >
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.3 + index * 0.1, type: 'spring', stiffness: 300 }}
-                className="w-14 h-14 rounded-xl bg-terracotta/10 flex items-center justify-center text-terracotta mb-5 group-hover:scale-110 transition-transform duration-300"
-              >
-                <item.icon className="w-7 h-7 text-terracotta" aria-hidden="true" />
-              </motion.div>
-
-              <motion.h3
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
-                className="heading-4 mb-3 group-hover:text-terracotta transition-colors"
-              >
-                {item.title}
-              </motion.h3>
-
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
-                className="body-base text-soft-black/70 leading-relaxed"
-              >
-                {item.desc}
-              </motion.p>
-            </motion.article>
+              <span className="flex-shrink-0 w-8 h-8 rounded-full bg-terracotta/10 flex items-center justify-center text-terracotta text-lg font-bold">
+                ✓
+              </span>
+              <p className="body-base text-soft-black/80 leading-relaxed pt-1">
+                {item.text}
+              </p>
+            </motion.div>
           ))}
         </motion.div>
 
-        {/* Bridge to Solution */}
+        {/* Bridge */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
-          className="mt-16 max-w-3xl mx-auto text-center"
+          className="mt-12 max-w-2xl mx-auto text-center"
         >
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="body-lg text-soft-black/70 mb-8"
+            className="body-lg font-medium text-soft-black mb-4"
           >
-            Di Komunitas%20Tumbuh%20Bersama, kamu akan belajar membangun kepemimpinan, kesehatan, dan bisnis secara bertahap dalam komunitas yang saling mendukung.
+            Kalau kamu merasakan salah satunya, maka kamu sudah berada di tempat yang tepat.
           </motion.p>
 
           <motion.p
@@ -137,27 +99,22 @@ export default function ProblemSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="body-base text-terracotta/90 font-medium mb-8"
+            className="body-base text-soft-black/90 mb-8"
           >
-            ✅ 7 Hari Gratis via WhatsApp → ✅ PDF Toolkit Gratis → ✅ Komunitas 1.240+ Ibu
+            Banyak anggota komunitas kami memulai dari titik yang sama.
           </motion.p>
 
           <motion.a
-            href="#tantangan"
+            href="https://api.whatsapp.com/send/?phone=6285312000796&text=Halo%20Ika%2C%20saya%20mau%20mulai%207%20Hari%20Growth%20Challenge"
+            target="_blank"
+            rel="noopener noreferrer"
             className="btn-primary inline-flex group"
-            aria-label="Mulai dengan 7 Hari Growth Challenge gratis melalui WhatsApp"
+            aria-label="Mulai 7 Hari bertumbuh gratis via WhatsApp"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            <span>Mulai 7 Hari Growth Challenge Gratis</span>
-            <motion.span
-              initial={{ x: -4 }}
-              whileHover={{ x: 4 }}
-              transition={{ type: 'spring', stiffness: 400 }}
-              aria-hidden="true"
-            >
-              →
-            </motion.span>
+            <MessageCircle className="w-5 h-5 mr-2" aria-hidden="true" />
+            <span>Mulai 7 Hari bertumbuh — Gratis</span>
           </motion.a>
         </motion.div>
       </div>

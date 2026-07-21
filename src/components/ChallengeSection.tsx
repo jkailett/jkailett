@@ -18,7 +18,7 @@ export default function ChallengeSection() {
   return (
     <section
       id="tantangan"
-      className="section-padding bg-warm-sand"
+      className="section-padding bg-white"
       aria-labelledby="challenge-heading"
     >
       <div className="container-custom">
@@ -47,7 +47,7 @@ export default function ChallengeSection() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.6, delay: 0.2 }}
-                      className="body-lg text-soft-black/70"
+                      className="body-lg text-soft-black/90"
                     >
                       Kirim satu pesan WhatsApp — dapatkan pelajaran harian selama 7 hari. Tanpa kartu kredit, tanpa jualan, tanpa spam. Hanya langkah kecil setiap hari.
                     </motion.p>

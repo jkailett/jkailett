@@ -1,0 +1,78 @@
+{
+  "name": "GrowWithIka",
+  "short_name": "GrowWithIka",
+  "description": "Ika Irawati membantu ibu & keluarga bertumbuh dalam kepemimpinan, hidup lebih sehat, dan membangun kesejahteraan melalui komunitas, Maxwell Leadership, dan bisnis Atomy berorientasi jangka panjang.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#D4C4B0",
+  "theme_color": "#8A9A7B",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["education", "lifestyle", "health"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Tantangan 7 Hari",
+      "short_name": "Tantangan 7 Hari",
+      "description": "Gabung Tantangan 7 Hari Bertumbuh Gratis",
+      "url": "/#tantangan",
+      "icons": [{ "src": "/icons/challenge-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Chat Ika",
+      "short_name": "Chat Ika",
+      "description": "Chat langsung dengan Ika via WhatsApp",
+      "url": "https://wa.me/6285312000796",
+      "icons": [{ "src": "/icons/chat-96.png", "sizes": "96x96" }]
+    }
+  ]
+}

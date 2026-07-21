@@ -77,7 +77,7 @@ export default function Tantangan7Hari() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="body-lg text-soft-black/70"
+            className="body-lg text-soft-black/90"
           >
             Kirim satu pesan WhatsApp — dapatkan pelajaran harian selama 7 hari. Tanpa kartu kredit, tanpa jualan, tanpa spam. Hanya langkah kecil setiap hari.
           </motion.p>
@@ -137,7 +137,7 @@ export default function Tantangan7Hari() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="body-base text-soft-black/70 mb-8"
+              className="body-base text-soft-black/90 mb-8"
             >
               Isi nama & nomor WA, langsung dapatkan materi hari 1.
             </motion.p>
