@@ -37,7 +37,7 @@ export default function KenalanDenganIka() {
           >
             <div className="aspect-[4/5] max-w-md lg:max-w-lg mx-auto rounded-3xl overflow-hidden shadow-warm-lg bg-warm-border relative">
               <Image
-                src="/ika-portrait.jpg"
+                src="/ika-hero.jpg"
                 alt="Ika Irawati — Growth & Leadership Mentor"
                 fill
                 priority

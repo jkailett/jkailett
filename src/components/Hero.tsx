@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { MessageCircle, CheckCircle2 } from 'lucide-react'
@@ -115,28 +114,7 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* Hero Image */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 1, ease: 'easeOut' }}
-          className="mt-16 relative"
-        >
-          <div className="relative max-w-2xl mx-auto">
-            <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-warm-lg bg-warm-border relative">
-              <Image
-                src="/ika-hero.jpg"
-                alt="Ika Irawati — Growth & Leadership Mentor"
-                fill
-                priority
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-warm-sand/60 via-transparent to-sage-green/20" aria-hidden="true" />
-            </div>
-          </div>
-        </motion.div>
-      </div>
+        {/* Hero Image — sementara dikosongkan, menunggu foto ideal */}
 
       {/* Scroll Indicator */}
       <motion.div
