@@ -114,7 +114,28 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* Hero Image — sementara dikosongkan, menunggu foto ideal */}
+        {/* Hero Image — foto Ika profesional, white blazer dengan navy trim */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.9, ease: 'easeOut' }}
+          className="mt-16 relative"
+        >
+          <div className="relative max-w-2xl mx-auto">
+            <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-warm-lg bg-warm-border relative">
+              <img
+                alt="Ika Irawati — Growth & Leadership Mentor"
+                fetchPriority="high"
+                decoding="async"
+                data-nimg="fill"
+                className="object-cover object-top"
+                style={{ position: 'absolute', height: '100%', width: '100%', left: 0, top: 0, right: 0, bottom: 0, color: 'transparent' }}
+                src="/ika-hero.jpg"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-warm-sand/60 via-transparent to-sage-green/20" aria-hidden="true" />
+            </div>
+          </div>
+        </motion.div>
 
       {/* Scroll Indicator */}
       <motion.div
@@ -128,6 +149,7 @@ export default function Hero() {
         </svg>
         <span className="text-xs font-medium tracking-wider uppercase">Scroll</span>
       </motion.div>
+    </div>
     </section>
   )
 }
