@@ -134,6 +134,9 @@ export default function Hero() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-warm-sand/60 via-transparent to-sage-green/20" aria-hidden="true" />
             </div>
+            <p className="text-center text-sm text-text-muted mt-3 italic">
+              Bersama David Tjokroraharjo, Presiden Maxwell Leadership Indonesia
+            </p>
           </div>
         </motion.div>
 
